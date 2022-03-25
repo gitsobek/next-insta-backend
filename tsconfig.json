@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "types": ["node"],
+    "module": "commonjs",
+    "declaration": false,
+    "strict": true,
+    "allowSyntheticDefaultImports": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "rootDir": "src",
+    "outDir": "build",
+    "typeRoots": ["./node_modules/@types", "./typings"],
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+    },
+  },
+  "include": ["src/**/*.ts", "typings/*"],
+  "exclude": ["node_modules", "build/**"]
+}
