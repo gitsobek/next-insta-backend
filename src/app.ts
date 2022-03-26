@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import { NotFoundError } from './errors/not-found.error';
 import { Model } from 'objection';
 import swaggerExpressOptions from './tools/swagger';
-import { ContainerDependencies } from './models/container';
+import type { ContainerDependencies } from './interfaces/container';
 
 async function createApp({ router, errorHandler, logger, db }: ContainerDependencies): Promise<express.Express> {
   const app = express();

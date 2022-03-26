@@ -1,7 +1,7 @@
 import { Joi } from "celebrate";
 import { flow } from "fp-ts/lib/function";
 import { environment, envNumber, envString, loadEnvs } from "./env";
-import { AppConfig } from "../models/app";
+import type { AppConfig } from "../interfaces/app";
 
 loadEnvs();
 

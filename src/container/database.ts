@@ -1,7 +1,7 @@
-import { asValue, AwilixContainer } from 'awilix';
+import { asValue, type AwilixContainer } from 'awilix';
 import Knex from 'knex';
 import { dbConfig } from '../config/db';
-import { ConfigDependencies } from '../models/app';
+import type { ConfigDependencies } from '../interfaces/app';
 
 export function registerDatabase(
   container: AwilixContainer,

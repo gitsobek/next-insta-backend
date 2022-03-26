@@ -1,8 +1,6 @@
-import { IDotenv } from '@next-insta/dotenv-typings';
+import * as dotenv from 'dotenv';
 import { existsSync } from 'fs';
-import { Environment } from '../models/environment';
-
-const dotenv: IDotenv = require('dotenv');
+import { Environment } from '../interfaces/environment';
 
 const environments = ['development', 'production', 'test'] as const;
 

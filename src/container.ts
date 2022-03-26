@@ -1,13 +1,15 @@
 import * as http from 'http';
-import { asFunction, asValue, AwilixContainer, createContainer as createAwilixContainer, InjectionMode } from 'awilix';
+import { asFunction, asValue, type AwilixContainer, createContainer as createAwilixContainer, InjectionMode } from 'awilix';
 import { createApp } from './app';
 import { appConfig } from './config/app';
 import { registerCommonDependencies } from './container/common';
 import { registerRouting } from './container/routing';
 import { registerMiddlewares } from './container/middlewares';
 import { registerDatabase } from './container/database';
-import { ConfigDependencies } from './models/app';
-import { ContainerDependencies } from './models/container';
+import type { ConfigDependencies } from './interfaces/app';
+import type { ContainerDependencies } from './interfaces/container';
+import { registerServices } from './container/services';
+import { registerControllers } from './container/controllers';
 
 export async function createContainer(
   dependencies?: Partial<ConfigDependencies>,
@@ -18,10 +20,11 @@ export async function createContainer(
     injectionMode: InjectionMode.PROXY,
   });
 
-  registerDatabase(container, dependencies);
-
+  await registerDatabase(container, dependencies);
   await registerCommonDependencies(createdConfig, container);
   await registerMiddlewares(container);
+  await registerServices(container);
+  await registerControllers(container);
   await registerRouting(container);
 
   container.register({

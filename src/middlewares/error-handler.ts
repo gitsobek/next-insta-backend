@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../errors/app.error';
 import { HttpError } from '../errors/http.error';
 import { StatusCodes } from 'http-status-codes';
-import { Logger } from '../tools/logger';
-import { CelebrateError, isCelebrateError } from 'celebrate';
+import type { Logger } from '../tools/logger';
+import { type CelebrateError, isCelebrateError } from 'celebrate';
 
 export const humanizeErrorMessage = (error: CelebrateError): Record<string, string[]> =>
   Object.entries(Object.fromEntries(error.details)).reduce(

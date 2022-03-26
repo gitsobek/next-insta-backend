@@ -1,5 +1,5 @@
-import { asFunction, asValue, AwilixContainer } from 'awilix';
-import { AppConfig, CommonDependencies } from '../models/app';
+import { asFunction, asValue, type AwilixContainer } from 'awilix';
+import type { AppConfig, CommonDependencies } from '../interfaces/app';
 import { createRouter } from '../routes';
 import { hideDetailsFromProduction } from '../tools/hide-details';
 import { createLogger } from '../tools/logger';

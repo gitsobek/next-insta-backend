@@ -1,7 +1,7 @@
 import { Joi } from 'celebrate';
 import { EnvironmentTypes, envNumber, envString, loadEnvs } from './env';
 import { flow } from 'fp-ts/lib/function';
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 
 loadEnvs();
 
@@ -15,26 +15,14 @@ const createDatabaseConfig = (): Record<EnvironmentTypes, Knex.Config> => ({
   development: {
     client: 'pg',
     connection: buildConnectionUrl(),
-    migrations: {
-      directory: '../database/migrations',
-    },
-    seeds: { directory: '../database/seeds' },
   },
   test: {
     client: 'pg',
     connection: buildConnectionUrl(),
-    migrations: {
-      directory: '../database/migrations',
-    },
-    seeds: { directory: '../database/seeds' },
   },
   production: {
     client: 'pg',
     connection: buildConnectionUrl(),
-    migrations: {
-      directory: '../database/migrations',
-    },
-    seeds: { directory: '../database/seeds' },
   },
 });
 

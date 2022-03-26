@@ -1,10 +1,10 @@
 import * as express from "express";
-import { getAll } from "../controllers/users";
+import type { ControllerDependencies } from "../controllers";
 
-export const usersRouting = () => {
+export const usersRouting = ({ usersController }: ControllerDependencies) => {
   const router = express.Router();
 
-  router.get('/', getAll); 
+  router.get('/', usersController.getUsers); 
 
   return router;
 };

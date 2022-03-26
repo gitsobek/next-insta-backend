@@ -14,10 +14,14 @@
   "scripts": {
     "prebuild": "rimraf build",
     "build": "tsc --skipLibCheck",
-    "dev": "cross-env NODE_ENV=development nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node --files src/boot.ts"
+    "dev": "cross-env NODE_ENV=development nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node --files src/boot.ts",
+    "db:seed": "knex seed:run",
+    "db:migrate": "knex migrate:latest",
+    "db:rollback": "knex migrate:rollback"
   },
   "dependencies": {
     "awilix": "^7.0.0",
+    "bcrypt": "^5.0.1",
     "celebrate": "^15.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
@@ -35,6 +39,8 @@
     "winston": "^3.6.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/morgan": "^1.9.3",

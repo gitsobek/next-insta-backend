@@ -1,6 +1,6 @@
-import { asFunction, AwilixContainer } from 'awilix';
+import { asFunction, type AwilixContainer } from 'awilix';
 import { errorHandler } from '../middlewares/error-handler';
-import { MiddlewareDependencies } from '../models/app';
+import type { MiddlewareDependencies } from '../interfaces/app';
 
 export async function registerMiddlewares(
   container: AwilixContainer,
