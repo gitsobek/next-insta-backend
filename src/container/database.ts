@@ -1,16 +1,18 @@
-import { asValue, type AwilixContainer } from 'awilix';
-import Knex from 'knex';
+import { asFunction, asValue, type AwilixContainer } from 'awilix';
 import { dbConfig } from '../config/db';
-import type { ConfigDependencies } from '../interfaces/app';
+import type { DatabaseFactory } from '../factories/database/database.factory';
+import type { AppConfig, DatabaseDependencies } from '../interfaces/app';
 
 export function registerDatabase(
   container: AwilixContainer,
-  dependencies?: Partial<ConfigDependencies>,
-): AwilixContainer {
-  const dbConnection = dependencies?.connection || Knex(dbConfig);
+  appConfig: AppConfig,
+): AwilixContainer<DatabaseDependencies> {
+  const databaseFactory: DatabaseFactory = container.resolve('databaseFactory');
+  const dbBuilder = databaseFactory.getDatabaseBuilder(appConfig.databaseMapper);
 
   container.register({
-    db: asValue(dbConnection),
+    dbConfig: asValue(dbConfig),
+    db: asFunction(dbBuilder).singleton(),
   });
 
   return container;

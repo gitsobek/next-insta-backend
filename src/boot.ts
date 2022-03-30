@@ -19,12 +19,12 @@ import { createContainer } from './container';
   });
 
   try {
-    await db.raw('SELECT 1');
+    await db.connect();
     logger.info('Database is up & running.');
   } catch (e) {
     logger.error(`Error while connecting to database: ${(e as Error).toString()}.`);
     process.exit(1);
   }
 
-  await server.start();
+  server.start();
 })();

@@ -5,6 +5,8 @@ import type { RoutingDependencies } from '../routes';
 import type { Celebrator2 } from 'celebrate';
 import type { AppendArgument } from '../tools/types';
 import type { Application as ServerApplication } from '../factories/application/application.types';
+import type { Database } from '../factories/database/database.types';
+import type { DatabaseConfig, DatabaseMapperType } from './database';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
 export type ErrorMiddlewareType<T> = AppendArgument<MiddlewareType<T>, Error>;
@@ -19,6 +21,7 @@ export enum ApplicationType {
 export interface AppConfig {
   appName: string;
   appType: ApplicationType;
+  databaseMapper: DatabaseMapperType
   port: number;
   env: string;
 }
@@ -28,8 +31,9 @@ export interface AppDependencies {
   server: ServerApplication;
 }
 
-export interface DatabaseDependencies {
-  db: Knex;
+export interface DatabaseDependencies<T = Knex> {
+  db: Database<T>;
+  dbConfig: DatabaseConfig;
 }
 
 export interface ConfigDependencies {

@@ -1,7 +1,7 @@
 import { Joi } from 'celebrate';
 import { EnvironmentTypes, envNumber, envString, loadEnvs } from './env';
 import { flow } from 'fp-ts/lib/function';
-import type { Knex } from 'knex';
+import type { DatabaseConfig } from '../interfaces/database';
 
 loadEnvs();
 
@@ -11,7 +11,7 @@ const buildConnectionUrl = (): string =>
     'localhost',
   )}:${envNumber('DB_PORT', 5432)}/${envString('DB_NAME', 'next-insta-db')}`;
 
-const createDatabaseConfig = (): Record<EnvironmentTypes, Knex.Config> => ({
+const createDatabaseConfig = (): Record<EnvironmentTypes, DatabaseConfig> => ({
   development: {
     client: 'pg',
     connection: buildConnectionUrl(),
@@ -26,21 +26,15 @@ const createDatabaseConfig = (): Record<EnvironmentTypes, Knex.Config> => ({
   },
 });
 
-const pickDatabaseConfig = (config: Record<EnvironmentTypes, Knex.Config>) =>
+const pickDatabaseConfig = (config: Record<EnvironmentTypes, DatabaseConfig>) =>
   config[process.env.NODE_ENV as EnvironmentTypes];
 
 const validateDatabaseConfig = (
-  config: Record<EnvironmentTypes, Knex.Config>,
-): Record<EnvironmentTypes, Knex.Config> | never => {
+  config: Record<EnvironmentTypes, DatabaseConfig>,
+): Record<EnvironmentTypes, DatabaseConfig> | never => {
   const subSchema = {
     client: Joi.string().required(),
     connection: Joi.string().required(),
-    migrations: Joi.object().keys({
-      directory: Joi.string().required(),
-    }),
-    seeds: Joi.object().keys({
-      directory: Joi.string().required(),
-    }),
   };
 
   const schema = Joi.object().keys({

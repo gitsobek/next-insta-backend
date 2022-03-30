@@ -19,13 +19,13 @@ export async function createContainer(
     injectionMode: InjectionMode.PROXY,
   });
 
-  await registerDatabase(container, dependencies);
-  await registerCommonDependencies(createdConfig, container);
+  await registerCommonDependencies(container, createdConfig);
+  await registerDatabase(container, createdConfig);
   await registerMiddlewares(container);
   await registerServices(container);
   await registerControllers(container);
   await registerRouting(container);
-  await registerServer(container, appConfig);
+  await registerServer(container, createdConfig);
 
   return container;
 }

@@ -7,15 +7,12 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import helmet from 'helmet';
 import { NotFoundError } from './errors/not-found.error';
-import { Model } from 'objection';
 import swaggerExpressOptions from './tools/swagger';
 import type { ContainerDependencies } from './interfaces/container';
 import { HttpApplication } from './factories/application/http-application';
 
-const createApp = ({ router, errorHandler, logger, db }: ContainerDependencies): express.Express => {
+const createApp = ({ router, errorHandler, logger }: ContainerDependencies): express.Express => {
   const app = express();
-
-  Model.knex(db);
 
   const stream: morgan.StreamOptions = {
     write: (message) => logger.http(message),
