@@ -1,6 +1,8 @@
 import * as express from 'express';
 import * as cors from 'cors';
+import * as http from 'http';
 import * as morgan from 'morgan';
+import * as compression from 'compression';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import helmet from 'helmet';
@@ -8,8 +10,9 @@ import { NotFoundError } from './errors/not-found.error';
 import { Model } from 'objection';
 import swaggerExpressOptions from './tools/swagger';
 import type { ContainerDependencies } from './interfaces/container';
+import { HttpApplication } from './factories/application/http-application';
 
-async function createApp({ router, errorHandler, logger, db }: ContainerDependencies): Promise<express.Express> {
+const createApp = ({ router, errorHandler, logger, db }: ContainerDependencies): express.Express => {
   const app = express();
 
   Model.knex(db);
@@ -29,7 +32,17 @@ async function createApp({ router, errorHandler, logger, db }: ContainerDependen
       },
     }),
   );
-  app.use(helmet.contentSecurityPolicy());
+  app.use(
+    compression({
+      filter: (req: express.Request, res: express.Response) => {
+        if (req.headers['x-no-compression']) {
+          return false;
+        }
+
+        return compression.filter(req, res);
+      },
+    }),
+  );
   app.use(express.json());
 
   app.get('/health', (_, res) => {
@@ -47,4 +60,9 @@ async function createApp({ router, errorHandler, logger, db }: ContainerDependen
   return app;
 }
 
-export { createApp };
+const createServer = ({ port, app, logger }: ContainerDependencies): HttpApplication => {
+  const server = http.createServer(app);
+  return new HttpApplication({ server, port, logger });
+};
+
+export { createApp, createServer };

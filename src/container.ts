@@ -1,6 +1,4 @@
-import * as http from 'http';
-import { asFunction, asValue, type AwilixContainer, createContainer as createAwilixContainer, InjectionMode } from 'awilix';
-import { createApp } from './app';
+import { type AwilixContainer, createContainer as createAwilixContainer, InjectionMode } from 'awilix';
 import { appConfig } from './config/app';
 import { registerCommonDependencies } from './container/common';
 import { registerRouting } from './container/routing';
@@ -9,6 +7,7 @@ import { registerDatabase } from './container/database';
 import type { ConfigDependencies } from './interfaces/app';
 import type { ContainerDependencies } from './interfaces/container';
 import { registerServices } from './container/services';
+import { registerServer } from './container/server';
 import { registerControllers } from './container/controllers';
 
 export async function createContainer(
@@ -26,16 +25,7 @@ export async function createContainer(
   await registerServices(container);
   await registerControllers(container);
   await registerRouting(container);
-
-  container.register({
-    app: asFunction(createApp).singleton(),
-  });
-
-  const { app } = container.cradle;
-
-  container.register({
-    server: asValue(http.createServer(await app)),
-  });
+  await registerServer(container, appConfig);
 
   return container;
 }

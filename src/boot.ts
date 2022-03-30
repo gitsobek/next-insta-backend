@@ -4,7 +4,7 @@ import { createContainer } from './container';
 (async () => {
   const container = await createContainer();
 
-  const { server, port, logger, db } = container.cradle;
+  const { server, logger, db } = container.cradle;
 
   process.on('uncaughtException', (err: any) => {
     logger.error(`Uncaught: ${err.toString()}`, err);
@@ -26,5 +26,5 @@ import { createContainer } from './container';
     process.exit(1);
   }
 
-  server.listen(port, () => logger.info(`Server is up & running. Listening on port: ${port}`));
+  await server.start();
 })();

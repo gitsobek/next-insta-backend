@@ -1,4 +1,5 @@
-import { asFunction, asValue, type AwilixContainer } from 'awilix';
+import { asClass, asFunction, asValue, type AwilixContainer } from 'awilix';
+import { ApplicationFactory } from '../factories/application/application.factory';
 import type { AppConfig, CommonDependencies } from '../interfaces/app';
 import { createRouter } from '../routes';
 import { hideDetailsFromProduction } from '../tools/hide-details';
@@ -16,6 +17,7 @@ export async function registerCommonDependencies(
     logger: asValue(createLogger(appConfig.env)),
     validator: asValue(createValidator()),
     hideDetailsFromProduction: asValue(hideDetailsFromProduction(appConfig.env)),
+    applicationFactory: asClass(ApplicationFactory),
   });
 
   return container;
