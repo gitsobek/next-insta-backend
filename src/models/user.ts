@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 export class User extends Model implements IUser {
   id!: number;
   email!: string;
+  username!: string;
   password!: string;
   avatar: string;
   gender?: Gender;

@@ -1,7 +1,7 @@
-import type { UserRepository } from '../repositories/user.repository';
+import type { UserService } from './user.service';
 
 export interface ServiceDependencies {
-  userService: UserRepository;
+  userService: UserService;
 }
 
 export * from './user.service';

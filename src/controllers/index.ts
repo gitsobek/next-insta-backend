@@ -1,8 +1,8 @@
 import type { Controller } from '../interfaces/app';
-import type { UserRepository } from '../repositories/user.repository';
+import type { UserService } from '../services';
 
 export interface ControllerDependencies {
-  usersController: Controller<UserRepository>;
+  usersController: Controller<UserService>;
 }
 
 export * from './users';

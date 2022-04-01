@@ -3,7 +3,7 @@ import { ApplicationFactory } from '../factories/application/application.factory
 import { DatabaseFactory } from '../factories/database/database.factory';
 import type { AppConfig, CommonDependencies } from '../interfaces/app';
 import { createRouter } from '../routes';
-import { hideDetailsFromProduction } from '../tools/hide-details';
+import { hideDetailsFromProduction } from '../utils/hide-details';
 import { createLogger } from '../tools/logger';
 import { createValidator } from '../tools/validator';
 

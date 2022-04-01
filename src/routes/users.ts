@@ -1,10 +1,10 @@
 import * as express from "express";
-import type { ControllerDependencies } from "../controllers";
+import type { ContainerDependencies } from "../interfaces/container";
 
-export const usersRouting = ({ usersController }: ControllerDependencies) => {
+export const usersRouting = ({ usersController, usersValidation }: ContainerDependencies) => {
   const router = express.Router();
 
-  router.get('/', usersController.getUsers); 
+  router.get('/', usersValidation.getUsers, usersController.getUsers); 
 
   return router;
 };

@@ -44,7 +44,7 @@ export const errorHandler =
     if (err instanceof AppError) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
-        error: err?.message || 'Internal server error.',
+        error: err?.message || 'Request could not be processed successfully.',
         stack: hideDetailsFromProduction(err.stack),
       });
     }

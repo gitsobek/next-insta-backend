@@ -9,6 +9,7 @@ function createFakeUser() {
 
   return {
     email: faker.internet.exampleEmail(),
+    username: faker.internet.userName(),
     password: bcrypt.hashSync('qwerty12345', 8),
     avatar: faker.internet.avatar(),
     gender: genders[genderNumber],
