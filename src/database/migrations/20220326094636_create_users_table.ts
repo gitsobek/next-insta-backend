@@ -6,14 +6,16 @@ export async function up(knex: Knex): Promise<void> {
     table.string('email', 128).unique().notNullable();
     table.string('username', 64).unique().notNullable();
     table.string('password').notNullable();
-    table.string('avatar').nullable();
+    table.string('avatar', 1024).nullable();
     table.enum('gender', ['male', 'female', 'unknown']).nullable();
     table.string('firstName', 50).nullable();
     table.string('lastName', 50).nullable();
-    table.string('bio').nullable();
+    table.string('bio', 1024).nullable();
     table.string('phoneNumber', 26).nullable();
-    table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+    table.string('activationToken').nullable();
+    table.integer('activationTokenExpireDate').nullable();
+    table.timestamp('createdAt').defaultTo(new Date().toISOString());
+    table.timestamp('updatedAt').defaultTo(new Date().toISOString());
   });
 }
 

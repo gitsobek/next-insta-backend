@@ -18,9 +18,12 @@ export async function registerCommonDependencies(
     logger: asValue(createLogger(appConfig.env)),
     validator: asValue(createValidator()),
     hideDetailsFromProduction: asValue(hideDetailsFromProduction(appConfig.env)),
+  });
+
+  container.register({
     applicationFactory: asClass(ApplicationFactory),
     databaseFactory: asClass(DatabaseFactory)
-  });
+  })
 
   return container;
 }

@@ -4,8 +4,21 @@ import type { UserRepository } from '../user.repository';
 import { User as UserTable } from '../../models/user';
 
 export class UserObjectionRepository implements UserRepository {
-  findByUsername: (username: string) => Promise<User | undefined>;
-  findById: (id: string) => Promise<User | undefined>;
+  public async findById(id: number): Promise<User | undefined> {
+    return UserTable.query().findById(id);
+  }
+
+  public async findBySchema(user: Partial<User>): Promise<User | undefined> {
+    return UserTable.query().findOne(user);
+  }
+
+  public async findByUsername(username: string): Promise<User | undefined> {
+    return UserTable.query().findOne('username', '=', username);
+  }
+
+  public async findByUsernameOrEmail(username: string, email: string): Promise<User | undefined> {
+    return UserTable.query().where('username', '=', username!).orWhere('email', '=', email).first();
+  }
 
   public async getUsers(queryObject: Pagination): Promise<{ users: User[]; total: number }> {
     const query = UserTable.query().select();
@@ -20,7 +33,15 @@ export class UserObjectionRepository implements UserRepository {
     return { users: data, total };
   }
 
-  add: (user: User) => Promise<User>;
-  save: (user: Partial<User>) => Promise<User>;
-  delete: (ids: string[]) => Promise<any>;
+  public async add(user: User): Promise<User> {
+    return UserTable.query().insertAndFetch(user);
+  }
+
+  public async save(id: number, user: Partial<User>): Promise<User> {
+    return UserTable.query().patchAndFetchById(id, user);
+  }
+
+  public async delete(id: number): Promise<any> {
+    return UserTable.query().deleteById(id);
+  }
 }

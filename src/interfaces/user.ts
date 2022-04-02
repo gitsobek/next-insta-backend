@@ -15,6 +15,8 @@ export interface User {
   lastName?: string;
   bio?: string;
   phoneNumber?: string;
-  created_at?: string;
-  updated_at?: string;
+  activationToken?: string | null;
+  activationTokenExpireDate?: number | null;
+  createdAt: string;
+  updatedAt: string;
 }

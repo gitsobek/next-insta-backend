@@ -9,6 +9,7 @@ import type { Database } from '../factories/database/database.types';
 import type { DatabaseConfig, DatabaseMapperType } from './database';
 import type { UserRepository } from '../repositories/user.repository';
 import type { UserService } from '../services';
+import type { UserActivationConfig } from '../config/app';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
 export type ErrorMiddlewareType<T> = AppendArgument<MiddlewareType<T>, Error>;
@@ -29,6 +30,10 @@ export interface AppConfig {
   databaseMapper: DatabaseMapperType;
   port: number;
   env: string;
+  passwordRegex: RegExp;
+  passwordValidationError: string;
+  saltRounds: number;
+  userActivationConfig: UserActivationConfig;
 }
 
 export interface AppDependencies {

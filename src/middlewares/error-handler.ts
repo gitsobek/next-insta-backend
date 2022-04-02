@@ -42,6 +42,8 @@ export const errorHandler =
     }
 
     if (err instanceof AppError) {
+      logger.error(`Tracking: ${err.details?.toString()}`);
+
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
         error: err?.message || 'Request could not be processed successfully.',

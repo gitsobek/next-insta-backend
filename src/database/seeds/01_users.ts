@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
-const genders: string[] = ['male', 'female'];
+const genders: string[] = ['male', 'female', 'unknown'];
 
 function createFakeUser() {
   const genderNumber = Math.floor(Math.random() * genders.length);

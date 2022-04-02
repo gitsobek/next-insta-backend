@@ -1,6 +1,5 @@
-import { Model } from 'objection';
+import { Model, Pojo } from 'objection';
 import type { Gender, User as IUser } from '../interfaces/user';
-import * as bcrypt from 'bcrypt';
 
 export class User extends Model implements IUser {
   id!: number;
@@ -13,31 +12,31 @@ export class User extends Model implements IUser {
   lastName?: string;
   bio?: string;
   phoneNumber?: string;
-  created_at?: string;
-  updated_at?: string;
+  activationToken?: string | null;
+  activationTokenExpireDate?: number | null;
+  createdAt: string;
+  updatedAt: string;
 
   static tableName: string = 'users';
   static idColumn: string | string[] = 'id';
 
-  static hashPassword(password: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(hash);
-      });
-    });
+  override $formatJson(json: Pojo): Pojo {
+    json = super.$formatJson(json);
+    const { password, activationToken, activationTokenExpireDate, ...nonSensitiveUserData } = json as User;
+    return nonSensitiveUserData;
   }
 
-  static comparePassword(user: IUser, password: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      bcrypt.compare(password, user.password, (err, res) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(res);
-      });
-    });
+  override $beforeInsert() {
+    this.createdAt = new Date().toISOString();
+  }
+
+  override $beforeUpdate() {
+    this.updatedAt = new Date().toISOString();
   }
 }
+
+export const createUserModel = (data: Partial<User>): User => {
+  const entity = new User();
+  Object.assign(entity, data);
+  return entity;
+};

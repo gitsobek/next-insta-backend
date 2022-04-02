@@ -1,5 +1,6 @@
 import type { ControllerDependencies } from '../controllers';
 import type { RoutingDependencies } from '../routes';
+import type { ServiceDependencies } from '../services';
 import type {
   AppDependencies,
   CommonDependencies,
@@ -16,5 +17,6 @@ export type ContainerDependencies =
   CommonDependencies &
   RoutingDependencies &
   ControllerDependencies &
+  ServiceDependencies &
   MiddlewareDependencies &
   ValidationSchemaDependencies

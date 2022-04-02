@@ -37,7 +37,7 @@ const validateDatabaseConfig = (
     connection: Joi.string().required(),
   };
 
-  const schema = Joi.object().keys({
+  const schema = Joi.object<Record<EnvironmentTypes, DatabaseConfig>>().keys({
     development: Joi.object().keys(subSchema),
     test: Joi.object().keys(subSchema),
     production: Joi.object().keys(subSchema),
