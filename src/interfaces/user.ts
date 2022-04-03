@@ -9,6 +9,7 @@ export interface User {
   email: string;
   username: string;
   password: string;
+  isActive: boolean;
   avatar?: string;
   gender?: Gender;
   firstName?: string;
@@ -17,6 +18,13 @@ export interface User {
   phoneNumber?: string;
   activationToken?: string | null;
   activationTokenExpireDate?: number | null;
+  resetPasswordToken?: string | null;
+  hashedRefreshToken?: string | null;
   createdAt: string;
   updatedAt: string;
 }
+
+export type UserPublic = Omit<
+  User,
+  'password' | 'activationToken' | 'activationTokenExpireDate' | 'resetPasswordToken' | 'hashedRefreshToken'
+>;

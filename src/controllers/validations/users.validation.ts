@@ -1,13 +1,17 @@
 import { Joi } from 'celebrate';
 import type { CommonDependencies, ValidationSchema } from '../../interfaces/app';
-import type { UserService } from '../../services';
 import type { User } from '../../interfaces/user';
 import type { Pagination } from '../../interfaces/pagination';
+import type { UserHandlers } from '../users';
 
-export function createValidationSchemasForUsers({
-  validator,
-  appConfig,
-}: CommonDependencies): ValidationSchema<UserService> {
+export function createValidationSchemasForUsers({ validator, appConfig }: CommonDependencies): ValidationSchema<UserHandlers> {
+  const login = validator({
+    body: Joi.object({
+      username: Joi.string().required(),
+      password: Joi.string().required(),
+    }).required(),
+  });
+
   const getUserById = validator({
     params: Joi.object({
       userId: Joi.number().integer().min(0).required(),
@@ -66,6 +70,7 @@ export function createValidationSchemasForUsers({
   });
 
   return {
+    login,
     getUserById,
     getUserByUsername,
     getUsers,

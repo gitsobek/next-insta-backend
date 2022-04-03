@@ -1,8 +1,8 @@
 import type { Controller } from '../interfaces/app';
-import type { UserService } from '../services';
+import type { UserHandlers } from './users';
 
 export interface ControllerDependencies {
-  usersController: Controller<UserService>;
+  usersController: Controller<UserHandlers>;
 }
 
 export * from './users';

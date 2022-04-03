@@ -6,6 +6,7 @@ import { createRouter } from '../routes';
 import { hideDetailsFromProduction } from '../utils/hide-details';
 import { createLogger } from '../tools/logger';
 import { createValidator } from '../tools/validator';
+import { AuthenticationClientFactory } from '../factories/authentication/authentication-client.factory';
 
 export async function registerCommonDependencies(
   container: AwilixContainer,
@@ -22,7 +23,8 @@ export async function registerCommonDependencies(
 
   container.register({
     applicationFactory: asClass(ApplicationFactory),
-    databaseFactory: asClass(DatabaseFactory)
+    databaseFactory: asClass(DatabaseFactory),
+    authenticationFactory: asClass(AuthenticationClientFactory)
   })
 
   return container;

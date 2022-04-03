@@ -1,11 +1,12 @@
-import { Model, Pojo } from 'objection';
-import type { Gender, User as IUser } from '../interfaces/user';
+import { Model } from 'objection';
+import type { Gender, User as IUser, UserPublic } from '../interfaces/user';
 
 export class User extends Model implements IUser {
   id!: number;
   email!: string;
   username!: string;
   password!: string;
+  isActive!: boolean;
   avatar: string;
   gender?: Gender;
   firstName?: string;
@@ -14,17 +15,13 @@ export class User extends Model implements IUser {
   phoneNumber?: string;
   activationToken?: string | null;
   activationTokenExpireDate?: number | null;
+  resetPasswordToken?: string | null;
+  hashedRefreshToken?: string | null;
   createdAt: string;
   updatedAt: string;
 
   static tableName: string = 'users';
   static idColumn: string | string[] = 'id';
-
-  override $formatJson(json: Pojo): Pojo {
-    json = super.$formatJson(json);
-    const { password, activationToken, activationTokenExpireDate, ...nonSensitiveUserData } = json as User;
-    return nonSensitiveUserData;
-  }
 
   override $beforeInsert() {
     this.createdAt = new Date().toISOString();
@@ -35,8 +32,13 @@ export class User extends Model implements IUser {
   }
 }
 
-export const createUserModel = (data: Partial<User>): User => {
+export const createUserModel = (data: Partial<IUser>): IUser => {
   const entity = new User();
   Object.assign(entity, data);
   return entity;
 };
+
+export const createUserForPublic = (data: IUser): UserPublic => {
+  const { password, activationToken, activationTokenExpireDate, resetPasswordToken, hashedRefreshToken, ...nonSensitiveData } = data;
+  return nonSensitiveData;
+} 

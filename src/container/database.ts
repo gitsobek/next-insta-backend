@@ -1,8 +1,8 @@
 import { asClass, asFunction, asValue, type AwilixContainer } from 'awilix';
 import { dbConfig } from '../config/db';
 import type { DatabaseFactory } from '../factories/database/database.factory';
+import { DatabaseMapperType } from '../factories/database/database.types';
 import type { AppConfig, DatabaseDependencies } from '../interfaces/app';
-import { DatabaseMapperType } from '../interfaces/database';
 import { UserObjectionRepository } from '../repositories/objection/user.objection.repository';
 
 function getRepositories(mapper: DatabaseMapperType) {

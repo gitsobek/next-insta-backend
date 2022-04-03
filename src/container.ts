@@ -23,7 +23,7 @@ export async function createContainer(
   await registerCommonDependencies(container, createdConfig);
   await registerDatabase(container, createdConfig);
   await registerMiddlewares(container);
-  await registerServices(container);
+  await registerServices(container, createdConfig);
   await registerValidationSchemas(container);
   await registerControllers(container);
   await registerRouting(container);

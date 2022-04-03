@@ -1,16 +1,17 @@
 import type { Knex } from 'knex';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
+import { Gender, type User } from '../../interfaces/user';
 
-const genders: string[] = ['male', 'female', 'unknown'];
-
-function createFakeUser() {
+function createFakeUser(): Omit<User, 'id' | 'createdAt' | 'updatedAt'> {
+  const genders = Object.values(Gender);
   const genderNumber = Math.floor(Math.random() * genders.length);
 
   return {
     email: faker.internet.exampleEmail(),
     username: faker.internet.userName(),
     password: bcrypt.hashSync('qwerty12345', 8),
+    isActive: true,
     avatar: faker.internet.avatar(),
     gender: genders[genderNumber],
     firstName: faker.name.firstName(genderNumber),

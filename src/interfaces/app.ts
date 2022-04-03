@@ -4,29 +4,30 @@ import type { Knex } from 'knex';
 import type { RoutingDependencies } from '../routes';
 import type { Celebrator2 } from 'celebrate';
 import type { AppendArgument } from '../utils/types';
-import type { Application as ServerApplication } from '../factories/application/application.types';
-import type { Database } from '../factories/database/database.types';
-import type { DatabaseConfig, DatabaseMapperType } from './database';
+import type { Application as ServerApplication, ApplicationType } from '../factories/application/application.types';
+import type { Database, DatabaseMapperType } from '../factories/database/database.types';
+import type { DatabaseConfig } from './database';
 import type { UserRepository } from '../repositories/user.repository';
-import type { UserService } from '../services';
 import type { UserActivationConfig } from '../config/app';
+import type { ApplicationFactory } from '../factories/application/application.factory';
+import type { DatabaseFactory } from '../factories/database/database.factory';
+import type { AuthenticationClientFactory } from '../factories/authentication/authentication-client.factory';
+import type { AuthenticationStrategy, TokenConfig } from '../factories/authentication/authentication-client.types';
+import type { UserHandlers } from '../controllers';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
 export type ErrorMiddlewareType<T> = AppendArgument<MiddlewareType<T>, Error>;
-export type Controller<R> = {
-  [Key in keyof R]: (req: Request, res: Response, next: NextFunction) => Promise<Response>;
+export type Controller<R extends string> = {
+  [Key in R]: (req: Request, res: Response, next: NextFunction) => Promise<Response>;
 };
-export type ValidationSchema<R> = {
-  [Key in keyof R]: RequestHandler;
+export type ValidationSchema<R extends string> = {
+  [Key in R]: RequestHandler;
 };
-
-export enum ApplicationType {
-  HTTP = 'http',
-}
 
 export interface AppConfig {
   appName: string;
   appType: ApplicationType;
+  authenticationStrategy: AuthenticationStrategy;
   databaseMapper: DatabaseMapperType;
   port: number;
   env: string;
@@ -34,6 +35,8 @@ export interface AppConfig {
   passwordValidationError: string;
   saltRounds: number;
   userActivationConfig: UserActivationConfig;
+  accessTokenConfig: TokenConfig;
+  refreshTokenConfig: TokenConfig;
 }
 
 export interface AppDependencies {
@@ -59,10 +62,13 @@ export interface CommonDependencies {
   logger: Logger;
   validator: Celebrator2;
   hideDetailsFromProduction: (val: string) => string | undefined;
+  applicationFactory: ApplicationFactory;
+  databaseFactory: DatabaseFactory;
+  authenticationFactory: AuthenticationClientFactory;
 }
 
 export interface ValidationSchemaDependencies {
-  usersValidation: ValidationSchema<UserService>;
+  usersValidation: ValidationSchema<UserHandlers>;
 }
 
 export interface MiddlewareDependencies {

@@ -1,4 +1,4 @@
-import { DatabaseMapperType } from '../../interfaces/database';
+import { DatabaseMapperType } from './database.types';
 import { createKnexObjectionDatabase } from './knex-objection/create-knex-objection';
 
 export class DatabaseFactory {

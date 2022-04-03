@@ -3,18 +3,18 @@ import { AppError } from '../errors/app.error';
 import { NotFoundError } from '../errors/not-found.error';
 import type { ContainerDependencies } from '../interfaces/container';
 import type { Pagination } from '../interfaces/pagination';
-import type { User } from '../interfaces/user';
-import { createUserModel } from '../models/user';
+import type { User, UserPublic } from '../interfaces/user';
+import { createUserForPublic, createUserModel } from '../models/user';
 import { handleAsync } from '../utils/handle-async';
 
 export type CreateUserPayload = Pick<User, 'username' | 'email' | 'password'>;
 
 export interface UserResponse {
-  user: User;
+  user: UserPublic;
 }
 
 export interface UsersResponse {
-  users: User[];
+  users: UserPublic[];
   total: number;
   page: number;
   limit: number;
@@ -37,7 +37,7 @@ export class UserService {
     }
 
     return {
-      user,
+      user: createUserForPublic(user)
     };
   }
 
@@ -55,7 +55,7 @@ export class UserService {
     }
 
     return {
-      user,
+      user: createUserForPublic(user)
     };
   }
 
@@ -69,8 +69,8 @@ export class UserService {
     }
 
     return {
-      users: usersObject!.users,
-      total: usersObject!.total,
+      users: (usersObject!.users || []).map(createUserForPublic),
+      total: usersObject!.total || 0,
       page: query.page,
       limit: query.limit,
     };
@@ -103,11 +103,10 @@ export class UserService {
       username,
       email,
       password: hashedPassword,
+      isActive: activationTokenService.shouldUserBeActive(),
       activationToken,
       activationTokenExpireDate
     });
-
-    console.log('createdModel?', createdModel);
 
     const [newUser, errOnCreate] = await handleAsync(usersRepository.add(createdModel));
 
@@ -116,7 +115,7 @@ export class UserService {
     }
 
     return {
-      user: newUser!,
+      user: createUserForPublic(newUser!),
     };
   }
 
@@ -141,7 +140,7 @@ export class UserService {
     }
 
     return {
-      user: updatedUser!,
+      user: createUserForPublic(updatedUser!),
     };
   }
 

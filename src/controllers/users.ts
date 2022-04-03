@@ -1,9 +1,21 @@
 import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import type { Controller } from '../interfaces/app';
-import type { ServiceDependencies, UserService } from '../services';
+import type { ServiceDependencies } from '../services';
 
-export const createUsersController = ({ userService }: ServiceDependencies): Controller<UserService> => {
+export type UserHandlers = keyof ReturnType<typeof createUsersController>;
+
+export const createUsersController = ({ userService, authService }: ServiceDependencies) => {
+  const login = async (req: Request, res: Response, next: NextFunction) => {
+    const { username, password } = req.body;
+    const tokenObject = await authService.login(username, password);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'User has logged in successfully.',
+      data: tokenObject,
+    });
+  };
+
   const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = await userService.getUserById(+req.params.userId);
 
@@ -74,5 +86,5 @@ export const createUsersController = ({ userService }: ServiceDependencies): Con
     });
   };
 
-  return { getUserById, getUserByUsername, getUsers, createUser, updateUser, deleteUser };
+  return { login, getUserById, getUserByUsername, getUsers, createUser, updateUser, deleteUser };
 };

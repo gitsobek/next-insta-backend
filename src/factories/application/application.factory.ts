@@ -1,5 +1,5 @@
 import { createServer } from '../../app';
-import { ApplicationType } from '../../interfaces/app';
+import { ApplicationType } from './application.types';
 
 export class ApplicationFactory {
   public getApplicationBuilder(type: ApplicationType) {

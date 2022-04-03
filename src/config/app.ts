@@ -1,12 +1,14 @@
 import { Joi } from 'celebrate';
 import { flow } from 'fp-ts/lib/function';
 import { environment, envNumber, envString, loadEnvs } from './env';
-import { type AppConfig, ApplicationType } from '../interfaces/app';
-import { DatabaseMapperType } from '../interfaces/database';
+import { type AppConfig } from '../interfaces/app';
+import { ApplicationType } from '../factories/application/application.types';
+import { AuthenticationStrategy } from '../factories/authentication/authentication-client.types';
+import { DatabaseMapperType } from '../factories/database/database.types';
 
 loadEnvs();
 
-export type UserActivationConfig = {
+export interface UserActivationConfig {
   isUserActivationNeeded: boolean;
   timeToActiveAccountInDays: number;
 };
@@ -16,6 +18,8 @@ const passwordRegex = new RegExp(process.env.PASSWORD_REGEX || '^.{6,24}$');
 const loadConfig = (): AppConfig => ({
   appName: envString('SERVER_NAME', 'next_insta_api'),
   appType: ApplicationType.HTTP,
+  authenticationStrategy: (process.env.AUTHENTICATION_STRATEGY ||
+    AuthenticationStrategy.CUSTOM_JWT_V1) as AuthenticationStrategy,
   databaseMapper: DatabaseMapperType.KNEX_OBJECTION,
   port: envNumber('SERVER_PORT', 1337),
   env: environment(),
@@ -26,12 +30,28 @@ const loadConfig = (): AppConfig => ({
     isUserActivationNeeded: (process.env.IS_USER_ACTIVATION_NEEDED || 'false') === 'true',
     timeToActiveAccountInDays: +(process.env.TIME_TO_ACTIVE_ACCOUNT_IN_DAYS || 3),
   },
+  accessTokenConfig: {
+    expirationInSeconds: +(process.env.ACCESS_TOKEN_EXPIRATION || 600),
+    secret: process.env.ACCESS_TOKEN_SECRET || 'kTNZh3bJRp',
+  },
+  refreshTokenConfig: {
+    expirationInSeconds: +(process.env.REFRESH_TOKEN_EXPIRATION || 900),
+    secret: process.env.REFRESH_TOKEN_SECRET || 'qUaLLSCSp8',
+  },
 });
 
 const validateConfig = (config: AppConfig): AppConfig | never => {
+  const tokenConfigSchema = Joi.object({
+    expirationInSeconds: Joi.number().positive().required(),
+    secret: Joi.string().required(),
+  });
+
   const schema = Joi.object<AppConfig>().keys({
     appName: Joi.string().required(),
     appType: Joi.string().valid('http').required(),
+    authenticationStrategy: Joi.string()
+      .valid(...Object.values(AuthenticationStrategy))
+      .required(),
     databaseMapper: Joi.string().valid('knex_objection').required(),
     port: Joi.number().required(),
     env: Joi.string().required(),
@@ -42,8 +62,10 @@ const validateConfig = (config: AppConfig): AppConfig | never => {
       isUserActivationNeeded: Joi.boolean().required(),
       timeToActiveAccountInDays: Joi.number().required(),
     }).required(),
+    accessTokenConfig: tokenConfigSchema.required(),
+    refreshTokenConfig: tokenConfigSchema.required(),
   });
-  
+
   const { error, value } = schema.validate(config);
 
   if (error) {
