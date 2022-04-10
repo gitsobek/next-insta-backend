@@ -37,6 +37,7 @@ export const errorHandler =
       return res.status(err.status).json({
         code: err.status,
         error: err.message,
+        type: err.type,
         stack: hideDetailsFromProduction(err.stack),
       });
     }

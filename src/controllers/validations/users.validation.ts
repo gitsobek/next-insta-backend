@@ -4,11 +4,61 @@ import type { User } from '../../interfaces/user';
 import type { Pagination } from '../../interfaces/pagination';
 import type { UserHandlers } from '../users';
 
-export function createValidationSchemasForUsers({ validator, appConfig }: CommonDependencies): ValidationSchema<UserHandlers> {
+export function createValidationSchemasForUsers({
+  validator,
+  appConfig,
+}: CommonDependencies): Partial<ValidationSchema<UserHandlers>> {
   const login = validator({
     body: Joi.object({
       username: Joi.string().required(),
-      password: Joi.string().required(),
+      password: Joi.string()
+        .regex(appConfig.passwordRegex)
+        .required()
+        .messages({
+          'string.pattern.base': `${appConfig.passwordValidationError}`,
+        }),
+    }).required(),
+  });
+
+  const refreshToken = validator({
+    body: Joi.object({
+      accessToken: Joi.string(),
+      refreshToken: Joi.string().required()
+    }).required(),
+  });
+
+  const requestPasswordReset = validator({
+    body: Joi.object({
+      username: Joi.string().required(),
+    }).required(),
+  });
+
+  const resetPassword = validator({
+    body: Joi.object({
+      resetToken: Joi.string().required(),
+      newPassword: Joi.string()
+        .regex(appConfig.passwordRegex)
+        .required()
+        .messages({
+          'string.pattern.base': `${appConfig.passwordValidationError}`,
+        }),
+    }).required(),
+  });
+
+  const changePassword = validator({
+    body: Joi.object({
+      oldPassword: Joi.string()
+        .regex(appConfig.passwordRegex)
+        .required()
+        .messages({
+          'string.pattern.base': `${appConfig.passwordValidationError}`,
+        }),
+      newPassword: Joi.string()
+        .regex(appConfig.passwordRegex)
+        .required()
+        .messages({
+          'string.pattern.base': `${appConfig.passwordValidationError}`,
+        }),
     }).required(),
   });
 
@@ -71,6 +121,10 @@ export function createValidationSchemasForUsers({ validator, appConfig }: Common
 
   return {
     login,
+    refreshToken,
+    requestPasswordReset,
+    resetPassword,
+    changePassword,
     getUserById,
     getUserByUsername,
     getUsers,

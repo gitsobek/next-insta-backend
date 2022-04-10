@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import type { ServiceDependencies } from '../services';
+import { BearerToken } from '../utils/bearer-token';
 
 export type UserHandlers = keyof ReturnType<typeof createUsersController>;
 
@@ -13,6 +14,79 @@ export const createUsersController = ({ userService, authService }: ServiceDepen
       code: StatusCodes.OK,
       message: 'User has logged in successfully.',
       data: tokenObject,
+    });
+  };
+
+  const checkIfAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
+    const { accessToken } = res.locals;
+    const decodedToken = await authService.getTokenInfo(accessToken);
+    const { user } = await userService.getUserById(decodedToken.userId);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      data: user,
+    });
+  };
+
+  const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    const { authorization = '' } = req.headers;
+    const { 'X-SECURITY-TOKEN': cookieToken = '' } = req.cookies || {};
+
+    const accessToken = authorization
+      ? BearerToken.fromHeader(authorization).token
+      : BearerToken.fromCookieOrString(cookieToken).token;
+
+    const { accessToken: accessTokenFromBody, refreshToken } = req.body;
+    const tokens = await authService.refreshToken(accessToken || accessTokenFromBody, refreshToken);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      data: tokens,
+    });
+  };
+
+  const requestPasswordReset = async (req: Request, res: Response, next: NextFunction) => {
+    const { username } = req.body;
+    await authService.requestPasswordReset(username);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Password reset request has been completed.',
+    });
+  };
+
+  const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    const { resetToken, newPassword } = req.body;
+
+    const { user } = await userService.getUserByProps({ resetPasswordToken: resetToken });
+    await authService.resetPassword(user.username, newPassword);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Password has been successfully updated.',
+    });
+  };
+
+  const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = res.locals;
+    const { oldPassword, newPassword } = req.body;
+
+    await authService.setNewPassword(user.username, oldPassword, newPassword);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Password has been successfully updated.',
+    });
+  };
+
+  const logout = async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = res.locals;
+
+    await authService.logout(user.username);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'User has been successfully logged out.',
     });
   };
 
@@ -86,5 +160,19 @@ export const createUsersController = ({ userService, authService }: ServiceDepen
     });
   };
 
-  return { login, getUserById, getUserByUsername, getUsers, createUser, updateUser, deleteUser };
+  return {
+    login,
+    checkIfAuthenticated,
+    refreshToken,
+    requestPasswordReset,
+    resetPassword,
+    changePassword,
+    getUserById,
+    getUserByUsername,
+    getUsers,
+    createUser,
+    updateUser,
+    deleteUser,
+    logout,
+  };
 };

@@ -59,6 +59,24 @@ export class UserService {
     };
   }
 
+  async getUserByProps(queryUser: Partial<User>): Promise<UserResponse> | never {
+    const { usersRepository } = this.dependencies;
+
+    const [user, err] = await handleAsync(usersRepository.findBySchema(queryUser));
+
+    if (err) {
+      throw new AppError('An error occurred while fetching user.', err);
+    }
+
+    if (!user) {
+      throw new NotFoundError('User has not been found.');
+    }
+
+    return {
+      user: createUserForPublic(user)
+    };
+  }
+
   async getUsers(query: Pagination): Promise<UsersResponse> | never {
     const { usersRepository } = this.dependencies;
 

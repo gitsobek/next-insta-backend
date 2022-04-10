@@ -1,4 +1,4 @@
-import { sign, verify } from 'jsonwebtoken';
+import { sign, verify, decode } from 'jsonwebtoken';
 import { AppError } from '../errors/app.error';
 import type { TokenConfig, TokenPayload } from '../factories/authentication/authentication-client.types';
 import type { ContainerDependencies } from '../interfaces/container';
@@ -41,6 +41,10 @@ export class TokenService {
     });
   }
 
+  decodeToken(token: string): any {
+    return decode(token);
+  }
+
   async generateTokensAndHashedRefreshToken(data: TokenPayload<User['id']>) {
     const { appConfig, securityService } = this.dependencies;
 
@@ -73,7 +77,7 @@ export class TokenService {
     };
   }
 
-  async saveRefreshToken(userId: User['id'], token: string): Promise<User> {
+  async saveRefreshToken(userId: User['id'], token: string | null): Promise<User> {
     return this.dependencies.usersRepository.save(userId, { hashedRefreshToken: token });
   }
 }
