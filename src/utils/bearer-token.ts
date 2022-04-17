@@ -1,9 +1,10 @@
 import { UnauthorizedError } from '../errors/unauthorized.error';
+import Messages from '../consts';
 
 export class BearerToken {
   static fromCookieOrString(token: string): BearerToken | never {
     if (!token) {
-      throw new UnauthorizedError('Access token is missing or invalid.');
+      throw new UnauthorizedError(Messages.TOKENS.VERIFY.MISSING_ACCESS_TOKEN);
     }
 
     return new BearerToken(token);
@@ -13,7 +14,7 @@ export class BearerToken {
     const regex = /^(Bearer) ([^\s]+)$/;
 
     if (!token || !regex.test(token)) {
-      throw new UnauthorizedError('Access token is missing or invalid.');
+      throw new UnauthorizedError(Messages.TOKENS.VERIFY.MISSING_ACCESS_TOKEN);
     }
 
     const match = token.match(regex);
@@ -22,7 +23,7 @@ export class BearerToken {
       return new BearerToken(match[2]);
     }
 
-    throw new UnauthorizedError('Access token is missing or invalid.');
+    throw new UnauthorizedError(Messages.TOKENS.VERIFY.MISSING_ACCESS_TOKEN);
   }
 
   constructor(private accessToken: string) {}

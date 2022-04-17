@@ -6,6 +6,7 @@ import type { Pagination } from '../interfaces/pagination';
 import type { User, UserPublic } from '../interfaces/user';
 import { createUserForPublic, createUserModel } from '../models/user';
 import { handleAsync } from '../utils/handle-async';
+import Messages from '../consts';
 
 export type CreateUserPayload = Pick<User, 'username' | 'email' | 'password'>;
 
@@ -29,11 +30,11 @@ export class UserService {
     const [user, err] = await handleAsync(usersRepository.findById(id));
 
     if (err) {
-      throw new AppError('An error occurred while fetching user.', err);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, err);
     }
 
     if (!user) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     return {
@@ -47,11 +48,11 @@ export class UserService {
     const [user, err] = await handleAsync(usersRepository.findByUsername(username));
 
     if (err) {
-      throw new AppError('An error occurred while fetching user.', err);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, err);
     }
 
     if (!user) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     return {
@@ -65,11 +66,11 @@ export class UserService {
     const [user, err] = await handleAsync(usersRepository.findBySchema(queryUser));
 
     if (err) {
-      throw new AppError('An error occurred while fetching user.', err);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, err);
     }
 
     if (!user) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     return {
@@ -83,7 +84,7 @@ export class UserService {
     const [usersObject, err] = await handleAsync(usersRepository.getUsers(query));
 
     if (err) {
-      throw new AppError('An error occurred while fetching users.', err);
+      throw new AppError(Messages.USERS.FIND_ALL.APP_ERROR, err);
     }
 
     return {
@@ -101,7 +102,7 @@ export class UserService {
     const [foundUser, errOnSearch] = await handleAsync(usersRepository.findByUsernameOrEmail(username, email));
     
     if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnSearch);
     }
 
     if (foundUser) {
@@ -129,7 +130,7 @@ export class UserService {
     const [newUser, errOnCreate] = await handleAsync(usersRepository.add(createdModel));
 
     if (errOnCreate) {
-      throw new AppError('An error occurred while creating an user.', errOnCreate);
+      throw new AppError(Messages.USERS.CREATE.APP_ERROR, errOnCreate);
     }
 
     return {
@@ -143,18 +144,18 @@ export class UserService {
     const [foundUser, errOnSearch] = await handleAsync(usersRepository.findById(id));
     
     if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnSearch);
     }
 
     if (!foundUser) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     const updatedModel = { ...foundUser, ...user };
     const [updatedUser, errOnUpdate] = await handleAsync(usersRepository.save(id, updatedModel));
 
     if (errOnUpdate) {
-      throw new AppError('An error occurred while updating an user.', errOnUpdate);
+      throw new AppError(Messages.USERS.UPDATE.APP_ERROR, errOnUpdate);
     }
 
     return {
@@ -168,17 +169,17 @@ export class UserService {
     const [foundUser, errOnSearch] = await handleAsync(usersRepository.findById(id));
     
     if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnSearch);
     }
 
     if (!foundUser) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     const [result, errOnDelete] = await handleAsync(usersRepository.delete(id));
 
     if (errOnDelete) {
-      throw new AppError('An error occurred while deleting an user.', errOnDelete);
+      throw new AppError(Messages.USERS.DELETE.APP_ERROR, errOnDelete);
     }
 
     return !!result;

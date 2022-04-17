@@ -11,6 +11,7 @@ import { ForbiddenError } from '../../../errors/forbidden.error';
 import { UnauthorizedError } from '../../../errors/unauthorized.error';
 import { NotFoundError } from '../../../errors/not-found.error';
 import type { User } from '../../../interfaces/user';
+import Messages from '../../../consts';
 
 export class CustomAuthenticationClient implements AuthenticationClient {
   constructor(private dependencies: ContainerDependencies) {}
@@ -20,15 +21,15 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
     if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnSearch);
     }
 
     if (!user || !securityService.compareWithHash(password, user.password)) {
-      throw new UnauthorizedError('Invalid username or password.');
+      throw new UnauthorizedError(Messages.AUTH.INVALID_PAYLOAD);
     }
 
     if (appConfig.userActivationConfig.isUserActivationNeeded && !user.isActive) {
-      throw new ForbiddenError('This account is inactive.');
+      throw new ForbiddenError(Messages.AUTH.INACTIVE_ACCOUNT);
     }
 
     const data = {
@@ -44,7 +45,7 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const [, errOnTokenSave] = await handleAsync(tokenService.saveRefreshToken(data.userId, hashedRefreshToken));
 
     if (errOnTokenSave) {
-      throw new AppError('An error has occurred while creating access token.', errOnTokenSave);
+      throw new AppError(Messages.TOKENS.SAVE.APP_ERROR, errOnTokenSave);
     }
 
     return {
@@ -62,13 +63,7 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const { usersRepository, securityService } = this.dependencies;
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
-    if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
-    }
-
-    if (!user) {
-      throw new NotFoundError('User has not been found.');
-    }
+    this.handleUserNotFound(errOnSearch, user);
 
     const resetPasswordToken = securityService.performHash(username);
 
@@ -76,10 +71,10 @@ export class CustomAuthenticationClient implements AuthenticationClient {
       resetPasswordToken,
     };
 
-    const [result, errOnTokenSave] = await handleAsync(usersRepository.save(user.id, data));
+    const [result, errOnTokenSave] = await handleAsync(usersRepository.save(user!.id, data));
 
     if (errOnTokenSave) {
-      throw new AppError('An error has occurred while updating an user.', errOnTokenSave);
+      throw new AppError(Messages.USERS.UPDATE.APP_ERROR, errOnTokenSave);
     }
 
     return !!result;
@@ -89,13 +84,7 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const { usersRepository, securityService } = this.dependencies;
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
-    if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
-    }
-
-    if (!user) {
-      throw new NotFoundError('User has not been found.');
-    }
+    this.handleUserNotFound(errOnSearch, user);
 
     const hashedNewPassword = securityService.performHash(newPassword);
 
@@ -104,10 +93,10 @@ export class CustomAuthenticationClient implements AuthenticationClient {
       resetPasswordToken: null,
     };
 
-    const [result, errOnPasswordSave] = await handleAsync(usersRepository.save(user.id, data));
+    const [result, errOnPasswordSave] = await handleAsync(usersRepository.save(user!.id, data));
 
     if (errOnPasswordSave) {
-      throw new AppError('An error has occurred while updating an user.', errOnPasswordSave);
+      throw new AppError(Messages.USERS.UPDATE.APP_ERROR, errOnPasswordSave);
     }
 
     return !!result;
@@ -117,16 +106,10 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const { usersRepository, securityService } = this.dependencies;
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
-    if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
-    }
+    this.handleUserNotFound(errOnSearch, user);
 
-    if (!user) {
-      throw new NotFoundError('User has not been found.');
-    }
-
-    if (!securityService.compareWithHash(oldPassword, user.password)) {
-      throw new UnauthorizedError('Invalid password.');
+    if (!securityService.compareWithHash(oldPassword, user!.password)) {
+      throw new UnauthorizedError(Messages.AUTH.INVALID_PASSWORD);
     }
 
     const hashedNewPassword = securityService.performHash(newPassword);
@@ -135,10 +118,10 @@ export class CustomAuthenticationClient implements AuthenticationClient {
       password: hashedNewPassword,
     };
 
-    const [result, errOnPasswordSave] = await handleAsync(usersRepository.save(user.id, data));
+    const [result, errOnPasswordSave] = await handleAsync(usersRepository.save(user!.id, data));
 
     if (errOnPasswordSave) {
-      throw new AppError('An error has occurred while updating an user.', errOnPasswordSave);
+      throw new AppError(Messages.USERS.UPDATE.APP_ERROR, errOnPasswordSave);
     }
 
     return !!result;
@@ -154,17 +137,17 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     )) as [TokenPayload<User['id']>, Error];
 
     if (errOnVerification) {
-      throw new UnauthorizedError('Invalid access token');
+      throw new UnauthorizedError(Messages.TOKENS.VERIFY.INVALID_ACCESS_TOKEN);
     }
 
     const [user, errOnSearch] = await handleAsync(usersRepository.findById(payload.userId));
 
     if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnSearch);
     }
 
     if (!user || !securityService.compareWithHash(refreshToken, user.hashedRefreshToken!)) {
-      throw new NotFoundError('User has not been found.');
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
     const data = {
@@ -182,7 +165,7 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const [, errOnTokenSave] = await handleAsync(tokenService.saveRefreshToken(data.userId, hashedRefreshToken));
 
     if (errOnTokenSave) {
-      throw new AppError('An error has occurred while creating access token.', errOnTokenSave);
+      throw new AppError(Messages.TOKENS.SAVE.APP_ERROR, errOnTokenSave);
     }
 
     return {
@@ -199,20 +182,24 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     const { usersRepository, tokenService } = this.dependencies;
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
-    if (errOnSearch) {
-      throw new AppError('An error occurred while searching for existing user.', errOnSearch);
-    }
+    this.handleUserNotFound(errOnSearch, user);
 
-    if (!user) {
-      throw new NotFoundError('User has not been found.');
-    }
-
-    const [result, errOnTokenSave] = await handleAsync(tokenService.saveRefreshToken(user.id, null));
+    const [result, errOnTokenSave] = await handleAsync(tokenService.saveRefreshToken(user!.id, null));
 
     if (errOnTokenSave) {
-      throw new AppError('An error has occurred while creating access token.', errOnTokenSave);
+      throw new AppError(Messages.TOKENS.SAVE.APP_ERROR, errOnTokenSave);
     }
 
     return !!result;
+  }
+
+  private handleUserNotFound(err: AppError | null, user: User | null | undefined): void | never {
+    if (err) {
+      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, err);
+    }
+
+    if (!user) {
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
+    }
   }
 }
