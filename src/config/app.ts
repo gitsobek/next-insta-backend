@@ -13,6 +13,9 @@ export interface UserActivationConfig {
   timeToActiveAccountInDays: number;
 };
 
+const apiKeyRegex = new RegExp(
+  process.env.API_KEY_REGEX || '[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}',
+);
 const passwordRegex = new RegExp(process.env.PASSWORD_REGEX || '^.{6,24}$');
 
 const loadConfig = (): AppConfig => ({
@@ -38,6 +41,9 @@ const loadConfig = (): AppConfig => ({
     expirationInSeconds: +(process.env.REFRESH_TOKEN_EXPIRATION || 900),
     secret: process.env.REFRESH_TOKEN_SECRET || 'qUaLLSCSp8',
   },
+  apiKey: process.env.API_KEY as string,
+  apiKeyRegex,
+  apiKeyHeaderName: process.env.API_KEY_HEADER_NAME || 'x-api-key',
 });
 
 const validateConfig = (config: AppConfig): AppConfig | never => {
@@ -64,6 +70,9 @@ const validateConfig = (config: AppConfig): AppConfig | never => {
     }).required(),
     accessTokenConfig: tokenConfigSchema.required(),
     refreshTokenConfig: tokenConfigSchema.required(),
+    apiKey: Joi.string().regex(config.apiKeyRegex).required(),
+    apiKeyRegex: Joi.object().instance(RegExp).required(),
+    apiKeyHeaderName: Joi.string().required(),
   });
 
   const { error, value } = schema.validate(config);

@@ -37,6 +37,9 @@ export interface AppConfig {
   userActivationConfig: UserActivationConfig;
   accessTokenConfig: TokenConfig;
   refreshTokenConfig: TokenConfig;
+  apiKey: string;
+  apiKeyRegex: RegExp;
+  apiKeyHeaderName: string;
 }
 
 export interface AppDependencies {
@@ -72,5 +75,8 @@ export interface ValidationSchemaDependencies {
 }
 
 export interface MiddlewareDependencies {
+  requireAccessHandler: MiddlewareType<Promise<void>>;
+  apiKeyHandler: MiddlewareType<void>;
   errorHandler: ErrorMiddlewareType<Response>;
+  featureDisabledHandler: MiddlewareType<void>;
 }
