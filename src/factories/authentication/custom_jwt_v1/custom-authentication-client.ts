@@ -10,13 +10,14 @@ import {
 import { ForbiddenError } from '../../../errors/forbidden.error';
 import { UnauthorizedError } from '../../../errors/unauthorized.error';
 import { NotFoundError } from '../../../errors/not-found.error';
-import type { User } from '../../../interfaces/user';
+import type { User, UserPublic } from '../../../interfaces/user';
+import { createUserForPublic } from '../../../models/user';
 import Messages from '../../../consts';
 
 export class CustomAuthenticationClient implements AuthenticationClient {
   constructor(private dependencies: ContainerDependencies) {}
 
-  async login(username: string, password: string): Promise<AuthToken> {
+  async login(username: string, password: string): Promise<UserPublic & AuthToken> {
     const { usersRepository, securityService, tokenService, appConfig } = this.dependencies;
     const [user, errOnSearch] = await handleAsync(usersRepository.findByUsername(username));
 
@@ -49,6 +50,7 @@ export class CustomAuthenticationClient implements AuthenticationClient {
     }
 
     return {
+      ...createUserForPublic(user),
       accessToken,
       refreshToken,
     };
