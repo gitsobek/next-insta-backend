@@ -1,4 +1,4 @@
-import type { User } from '../../interfaces/user';
+import type { User, UserPublic } from '../../interfaces/user';
 
 export enum AuthenticationStrategy {
   CUSTOM_JWT_V1 = 'custom_jwt_v1',
@@ -28,7 +28,7 @@ export interface TokenConfig {
 }
 
 export interface AuthenticationClient {
-  login: (username: string, password: string) => Promise<AuthToken>;
+  login: (username: string, password: string) => Promise<UserPublic & AuthToken>;
   isAuthenticated: (accessToken: string) => Promise<TokenPayload<User['id']>>;
   requestPasswordReset: (username: string) => Promise<boolean>;
   resetPassword: (username: string, newPassword: string) => Promise<boolean>;

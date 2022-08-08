@@ -39,6 +39,13 @@ export const createUserModel = (data: Partial<IUser>): IUser => {
 };
 
 export const createUserForPublic = (data: IUser): UserPublic => {
-  const { password, activationToken, activationTokenExpireDate, resetPasswordToken, hashedRefreshToken, ...nonSensitiveData } = data;
+  const {
+    password,
+    activationToken,
+    activationTokenExpireDate,
+    resetPasswordToken,
+    hashedRefreshToken,
+    ...nonSensitiveData
+  } = data;
   return nonSensitiveData;
-} 
+};
