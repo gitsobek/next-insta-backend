@@ -7,6 +7,36 @@ import type { ServiceDependencies } from '../services';
 export type ProfileHandlers = keyof ReturnType<typeof createProfilesController>;
 
 export const createProfilesController = ({ profileService }: ServiceDependencies) => {
+  const addStory = async (req: Request, res: Response, next: NextFunction) => {
+    const stories = await profileService.addStory((res.locals.user as TokenPayload).userId, req.body);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Story has been successfully added.',
+      data: stories,
+    });
+  };
+
+  const getStories = async (req: Request, res: Response, next: NextFunction) => {
+    const stories = await profileService.getStories(req.params.username);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Stories have been successfully fetched.',
+      data: stories,
+    });
+  };
+
+  const deleteStory = async (req: Request, res: Response, next: NextFunction) => {
+    const stories = await profileService.deleteStory(+req.params.id);
+
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'Story has been successfully deleted.',
+      data: stories,
+    });
+  };
+
   const getProfileByUsername = async (req: Request, res: Response, next: NextFunction) => {
     const profile = await profileService.getProfileByUsername(
       req.params.username,
@@ -25,20 +55,17 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
       order = { by: 'username', type: Sorting.ASCENDING },
       page = 1,
       limit = 10,
-      filter
+      filter,
     } = req.query as unknown as Pagination;
 
     const queryObject: Pagination = {
       page: +page,
       limit: +limit,
       order,
-      filter
+      filter,
     };
-    
-    const followers = await profileService.getFollowers(
-      req.params.username,
-      queryObject
-    );
+
+    const followers = await profileService.getFollowers(req.params.username, queryObject);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -52,20 +79,17 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
       order = { by: 'username', type: Sorting.ASCENDING },
       page = 1,
       limit = 10,
-      filter
+      filter,
     } = req.query as unknown as Pagination;
 
     const queryObject: Pagination = {
       page: +page,
       limit: +limit,
       order,
-      filter
+      filter,
     };
-    
-    const followers = await profileService.getFollowingUsers(
-      req.params.username,
-      queryObject
-    );
+
+    const followers = await profileService.getFollowingUsers(req.params.username, queryObject);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -75,10 +99,7 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
   };
 
   const followUser = async (req: Request, res: Response, next: NextFunction) => {
-     await profileService.followUser(
-      req.params.username,
-      (res.locals.user as TokenPayload).userId,
-    );
+    await profileService.followUser(req.params.username, (res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -87,22 +108,22 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
   };
 
   const unfollowUser = async (req: Request, res: Response, next: NextFunction) => {
-    await profileService.unfollowUser(
-     req.params.username,
-     (res.locals.user as TokenPayload).userId,
-   );
+    await profileService.unfollowUser(req.params.username, (res.locals.user as TokenPayload).userId);
 
-   return res.status(StatusCodes.OK).send({
-     code: StatusCodes.OK,
-     message: 'User has been successfully unfollowed.',
-   });
- };
+    return res.status(StatusCodes.OK).send({
+      code: StatusCodes.OK,
+      message: 'User has been successfully unfollowed.',
+    });
+  };
 
   return {
+    addStory,
+    getStories,
+    deleteStory,
     getProfileByUsername,
     getFollowers,
     getFollowingUsers,
     followUser,
-    unfollowUser
+    unfollowUser,
   };
 };

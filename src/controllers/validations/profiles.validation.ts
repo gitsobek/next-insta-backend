@@ -6,6 +6,24 @@ import type { ProfileHandlers } from '../profiles';
 export function createValidationSchemasForProfiles({
   validator,
 }: CommonDependencies): Partial<ValidationSchema<ProfileHandlers>> {
+  const addStory = validator({
+    body: Joi.object({
+      photoUrl: Joi.string().required(),
+    }).required(),
+  });
+
+  const getStories = validator({
+    params: Joi.object({
+      username: Joi.string().required(),
+    }).required(),
+  });
+
+  const deleteStory = validator({
+    params: Joi.object({
+      id: Joi.number().required(),
+    }).required(),
+  });
+
   const getProfileByUsername = validator({
     params: Joi.object({
       username: Joi.string().required(),
@@ -61,6 +79,9 @@ export function createValidationSchemasForProfiles({
   });
 
   return {
+    addStory,
+    getStories,
+    deleteStory,
     getProfileByUsername,
     getFollowers,
     getFollowingUsers,

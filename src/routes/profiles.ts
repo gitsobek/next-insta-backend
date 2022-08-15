@@ -15,6 +15,24 @@ export const profilesRouting = ({
     profilesController.getProfileByUsername,
   );
 
+  router.post(
+    '/stories',
+    [apiKeyHandler, requireAccessHandler, profilesValidation.addStory],
+    profilesController.addStory,
+  );
+
+  router.get(
+    '/stories/:username',
+    [apiKeyHandler, requireAccessHandler, profilesValidation.getStories],
+    profilesController.getStories,
+  );
+
+  router.delete(
+    '/stories/:id',
+    [apiKeyHandler, requireAccessHandler, profilesValidation.deleteStory],
+    profilesController.deleteStory,
+  );
+
   router.get(
     '/followers/:username',
     [apiKeyHandler, requireAccessHandler, profilesValidation.getFollowers],

@@ -6,8 +6,22 @@ import type { User } from '../../interfaces/user';
 import type { Pagination } from '../../interfaces/pagination';
 
 export class ProfileObjectionRepository implements ProfileRepository {
+  public async addStory(id: number, story: Story): Promise<Story> {
+    return StoryTable.query().insertAndFetch({
+      userId: id,
+      photoUrl: story.photoUrl,
+    });
+  }
+
   public async getStories(id: number): Promise<Story[]> {
-    return StoryTable.query().select('photoUrl', 'createdAt').where('userId', '=', id).orderBy('createdAt', 'ASC');
+    return StoryTable.query()
+      .select('id', 'photoUrl', 'createdAt')
+      .where('userId', '=', id)
+      .orderBy('createdAt', 'ASC');
+  }
+
+  public async deleteStory(id: number): Promise<Story> {
+    return StoryTable.query().deleteById(id).returning('*') as unknown as Story;
   }
 
   public async getFollowers(id: number, queryObject?: Pagination): Promise<[User[], number]> {

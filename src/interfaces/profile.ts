@@ -1,4 +1,5 @@
 export interface Story {
+  userId: number;
   photoUrl: string;
   createdAt: string;
 }
