@@ -28,3 +28,14 @@ export type UserPublic = Omit<
   User,
   'password' | 'activationToken' | 'activationTokenExpireDate' | 'resetPasswordToken' | 'hashedRefreshToken'
 >;
+
+export interface UserResponse {
+  user: UserPublic;
+}
+
+export interface UsersResponse {
+  users: UserPublic[];
+  total: number;
+  page: number;
+  limit: number;
+}

@@ -41,7 +41,7 @@ export class UserObjectionRepository implements UserRepository {
     return UserTable.query().patchAndFetchById(id, user);
   }
 
-  public async delete(id: number): Promise<any> {
+  public async delete(id: number): Promise<number> {
     return UserTable.query().deleteById(id);
   }
 }

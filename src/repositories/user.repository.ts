@@ -12,5 +12,5 @@ export interface UserRepository {
   }>;
   add: (user: User) => Promise<User>;
   save: (id: number, user: Partial<User>) => Promise<User>;
-  delete: (id: number) => Promise<any>;
+  delete: (id: number) => Promise<number>;
 }

@@ -2,19 +2,40 @@
   "USERS": {
     "FIND_ONE": {
       "NOT_FOUND": "User has not been found",
-      "APP_ERROR": "An error occurred while searching for existing user"
+      "APP_ERROR": "An error has occurred while searching for existing user"
     },
     "FIND_ALL": {
-      "APP_ERROR": "An error occurred while fetching users"
+      "APP_ERROR": "An error has occurred while fetching users"
     },
     "CREATE": {
-      "APP_ERROR": "An error occurred while creating an user"
+      "APP_ERROR": "An error has occurred while creating an user"
     },
     "UPDATE": {
       "APP_ERROR": "An error has occurred while updating an user"
     },
     "DELETE": {
-      "APP_ERROR": "An error occurred while deleting an user"
+      "APP_ERROR": "An error has occurred while deleting an user"
+    }
+  },
+  "PROFILE": {
+    "FIND_ONE": {
+      "APP_ERROR": "An error has occurred while searching for profile"
+    },
+    "FIND_ALL": {
+      "FOLLOWERS": {
+        "APP_ERROR": "An error has occurred while searching for followers"
+      },
+      "FOLLOWING_USERS": {
+        "APP_ERROR": "An error has occurred while searching for following users"
+      }
+    },
+    "UPDATE": {
+      "FOLLOW": {
+        "APP_ERROR": "An error has occurred on follow user action"
+      },
+      "UNFOLLOW": {
+        "APP_ERROR": "An error has occurred on unfollow user action"
+      }
     }
   },
   "AUTH": {

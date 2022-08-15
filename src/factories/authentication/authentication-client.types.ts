@@ -14,7 +14,7 @@ export interface AuthToken {
   refreshToken: string;
 }
 
-export interface TokenPayload<T> {
+export interface TokenPayload<T = number> {
   userId: T;
   username: string;
   type: TokenType;

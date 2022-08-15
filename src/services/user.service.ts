@@ -3,23 +3,12 @@ import { AppError } from '../errors/app.error';
 import { NotFoundError } from '../errors/not-found.error';
 import type { ContainerDependencies } from '../interfaces/container';
 import type { Pagination } from '../interfaces/pagination';
-import type { User, UserPublic } from '../interfaces/user';
+import type { User, UserResponse, UsersResponse } from '../interfaces/user';
 import { createUserForPublic, createUserModel } from '../models/user';
 import { handleAsync } from '../utils/handle-async';
 import Messages from '../consts';
 
 export type CreateUserPayload = Pick<User, 'username' | 'email' | 'password'>;
-
-export interface UserResponse {
-  user: UserPublic;
-}
-
-export interface UsersResponse {
-  users: UserPublic[];
-  total: number;
-  page: number;
-  limit: number;
-}
 
 export class UserService {
   constructor(private dependencies: ContainerDependencies) {}

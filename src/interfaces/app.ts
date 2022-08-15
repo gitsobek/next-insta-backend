@@ -14,6 +14,8 @@ import type { DatabaseFactory } from '../factories/database/database.factory';
 import type { AuthenticationClientFactory } from '../factories/authentication/authentication-client.factory';
 import type { AuthenticationStrategy, TokenConfig } from '../factories/authentication/authentication-client.types';
 import type { UserHandlers } from '../controllers';
+import type { ProfileRepository } from '../repositories/profile.repository';
+import type { ProfileHandlers } from '../controllers/profiles';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
 export type ErrorMiddlewareType<T> = AppendArgument<MiddlewareType<T>, Error>;
@@ -51,6 +53,7 @@ export interface DatabaseDependencies<T = Knex> {
   db: Database<T>;
   dbConfig: DatabaseConfig;
   usersRepository: UserRepository;
+  profilesRepository: ProfileRepository;
 }
 
 export interface ConfigDependencies {
@@ -72,6 +75,7 @@ export interface CommonDependencies {
 
 export interface ValidationSchemaDependencies {
   usersValidation: ValidationSchema<UserHandlers>;
+  profilesValidation: ValidationSchema<ProfileHandlers>;
 }
 
 export interface MiddlewareDependencies {
