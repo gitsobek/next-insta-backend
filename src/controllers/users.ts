@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { Pagination, Sorting } from '../interfaces/pagination';
 import type { ServiceDependencies } from '../services';
 import { BearerToken } from '../utils/bearer-token';
 
@@ -111,9 +112,13 @@ export const createUsersController = ({ userService, authService }: ServiceDepen
   };
 
   const getUsers = async (req: Request, res: Response, next: NextFunction) => {
-    const { order = { by: 'username', type: 'asc' }, page = 1, limit = 10 } = req.query as any;
+    const {
+      order = { by: 'username', type: Sorting.ASCENDING },
+      page = 1,
+      limit = 10,
+    } = req.query as unknown as Pagination;
 
-    const queryObject = {
+    const queryObject: Pagination = {
       page: +page,
       limit: +limit,
       order,

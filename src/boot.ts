@@ -1,10 +1,11 @@
 import 'express-async-errors';
+import { INITIAL_JOBS } from './config/scheduler';
 import { createContainer } from './container';
 
 (async () => {
   const container = await createContainer();
 
-  const { server, logger, db } = container.cradle;
+  const { server, logger, db, schedulerService: scheduler } = container.cradle;
 
   process.on('uncaughtException', (err: any) => {
     logger.error(`Uncaught: ${err.toString()}`, err);
@@ -26,5 +27,7 @@ import { createContainer } from './container';
     process.exit(1);
   }
 
+  scheduler.boot();
+  scheduler.addInitialsJobs(INITIAL_JOBS);
   server.start();
 })();

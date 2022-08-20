@@ -18,8 +18,10 @@ services:
       - DB_NAME=db
       - DB_USERNAME=user
       - DB_PASSWORD=pass
+      - REDIS_URL=redis://cache:6379
     depends_on:
       - db
+      - cache
   db:
     container_name: next-insta-db
     image: postgres:14.2-alpine
@@ -32,3 +34,9 @@ services:
       - POSTGRES_DB=db
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+  cache:
+    container_name: next-insta-cache
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
