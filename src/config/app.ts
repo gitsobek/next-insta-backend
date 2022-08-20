@@ -44,6 +44,12 @@ const loadConfig = (): AppConfig => ({
   apiKey: process.env.API_KEY as string,
   apiKeyRegex,
   apiKeyHeaderName: process.env.API_KEY_HEADER_NAME || 'x-api-key',
+  redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+  schedulerConfig: {
+    queueName: process.env.JOB_QUEUE_NAME || 'next-insta-queue',
+    attempts: +(process.env.JOB_ATTEMPTS_NUMBER || 3),
+    timeBetweenAttempts: +(process.env.JOB_TIME_BETWEEN_ATTEMPTS || 5000),
+  },
 });
 
 const validateConfig = (config: AppConfig): AppConfig | never => {
@@ -73,6 +79,12 @@ const validateConfig = (config: AppConfig): AppConfig | never => {
     apiKey: Joi.string().regex(config.apiKeyRegex).required(),
     apiKeyRegex: Joi.object().instance(RegExp).required(),
     apiKeyHeaderName: Joi.string().required(),
+    redisUrl: Joi.string().required(),
+    schedulerConfig: Joi.object({
+      queueName: Joi.string().required(),
+      attempts: Joi.number().min(0).required(),
+      timeBetweenAttempts: Joi.number().min(0).required(),
+    }).required(),
   });
 
   const { error, value } = schema.validate(config);

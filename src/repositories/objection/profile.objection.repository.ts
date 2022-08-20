@@ -4,6 +4,7 @@ import { Follower as FollowerTable } from '../../models/follower';
 import type { ProfileRepository } from '../profile.repository';
 import type { User } from '../../interfaces/user';
 import type { Pagination } from '../../interfaces/pagination';
+import type { DatabasePeriod } from '../../interfaces/database';
 
 export class ProfileObjectionRepository implements ProfileRepository {
   public async addStory(id: number, story: Story): Promise<Story> {
@@ -22,6 +23,10 @@ export class ProfileObjectionRepository implements ProfileRepository {
 
   public async deleteStory(id: number): Promise<Story> {
     return StoryTable.query().deleteById(id).returning('*') as unknown as Story;
+  }
+
+  public async deleteStoryOlderThanPeriod(period: DatabasePeriod): Promise<number> {
+    return StoryTable.query().delete().whereRaw(`stories."createdAt" < NOW() - INTERVAL '${period}'`);
   }
 
   public async getFollowers(id: number, queryObject?: Pagination): Promise<[User[], number]> {

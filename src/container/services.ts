@@ -9,6 +9,9 @@ import {
   ActivationTokenService,
   TokenService,
 } from '../services';
+import { InternalJobManager } from '../services/scheduler/internal-job-manager.service';
+import { JobManager } from '../services/scheduler/job-manager.service';
+import { SchedulerService } from '../services/scheduler/scheduler.service';
 
 export async function registerServices(
   container: AwilixContainer,
@@ -24,6 +27,9 @@ export async function registerServices(
     userService: asClass(UserService).singleton(),
     profileService: asClass(ProfileService).singleton(),
     authService: asClass(AuthenticationClient).singleton(),
+    internalJobManager: asClass(InternalJobManager).singleton(),
+    jobManager: asClass(JobManager).singleton(),
+    schedulerService: asClass(SchedulerService).singleton()
   });
 
   return container;
