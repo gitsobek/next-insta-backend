@@ -12,3 +12,9 @@ export interface Pagination {
   limit: number;
   filter?: Record<string, string>;
 }
+
+export interface PaginationResponse {
+  total: number;
+  page?: number;
+  limit?: number;
+}

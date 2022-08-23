@@ -8,6 +8,7 @@ import {
   SecurityService,
   ActivationTokenService,
   TokenService,
+  PostService,
 } from '../services';
 import { InternalJobManager } from '../services/scheduler/internal-job-manager.service';
 import { JobManager } from '../services/scheduler/job-manager.service';
@@ -26,6 +27,7 @@ export async function registerServices(
     activationTokenService: asClass(ActivationTokenService).singleton(),
     userService: asClass(UserService).singleton(),
     profileService: asClass(ProfileService).singleton(),
+    postService: asClass(PostService).singleton(),
     authService: asClass(AuthenticationClient).singleton(),
     internalJobManager: asClass(InternalJobManager).singleton(),
     jobManager: asClass(JobManager).singleton(),

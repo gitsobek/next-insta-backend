@@ -1,24 +1,34 @@
 import { Model } from 'objection';
-import type { Story as IStory } from '../interfaces/profile';
+import { Post as IPost } from '../interfaces/post';
 import * as path from 'path';
 
-export class Story extends Model implements IStory {
+export class Post extends Model implements IPost {
   id!: number;
-  userId!: number;
   photoUrl: string;
+  description: string;
+  location: string;
+  userId: number;
   createdAt: string;
   updatedAt: string;
 
-  static override tableName: string = 'stories';
+  static override tableName: string = 'posts';
   static override idColumn: string | string[] = 'id';
 
   static override relationMappings = {
-    storyAuthor: {
+    postAuthor: {
       relation: Model.BelongsToOneRelation,
       modelClass: path.join(__dirname, 'User'),
       join: {
-        from: 'stories.userId',
+        from: 'posts.userId',
         to: 'users.id',
+      },
+    },
+    postLikes: {
+      relation: Model.HasManyRelation,
+      modelClass: path.join(__dirname, 'post_like'),
+      join: {
+        from: 'posts.id',
+        to: 'post_likes.postId',
       },
     },
   };

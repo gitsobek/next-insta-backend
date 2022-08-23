@@ -50,6 +50,27 @@
       "APP_ERROR": "An error has occurred on unfollow user action"
     }
   },
+  "POST": {
+    "FIND_ONE": {
+      "NOT_FOUND": "Post has not been found",
+      "APP_ERROR": "An error has occurred while searching for post"
+    },
+    "FIND_ALL": {
+      "APP_ERROR": "An error has occurred while searching for posts"
+    },
+    "CREATE": {
+      "APP_ERROR": "An error has occurred while creating a post"
+    },
+    "DELETE": {
+      "APP_ERROR": "An error has occurred while deleting a post"
+    },
+    "LIKE": {
+      "APP_ERROR": "An error has occurred on like post action"
+    },
+    "UNLIKE": {
+      "APP_ERROR": "An error has occurred on unlike post action"
+    }
+  },
   "AUTH": {
     "INVALID_PAYLOAD": "Invalid username or password",
     "INVALID_PASSWORD": "Invalid password",

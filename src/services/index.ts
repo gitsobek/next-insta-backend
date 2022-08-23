@@ -1,5 +1,6 @@
 import type { AuthenticationClient } from '../factories/authentication/authentication-client.types';
 import type { ActivationTokenService } from './activation-token.service';
+import type { PostService } from './post.service';
 import type { ProfileService } from './profile.service';
 import type { InternalJobManager } from './scheduler/internal-job-manager.service';
 import type { JobManager } from './scheduler/job-manager.service';
@@ -13,6 +14,7 @@ export interface ServiceDependencies {
   activationTokenService: ActivationTokenService;
   userService: UserService;
   profileService: ProfileService;
+  postService: PostService;
   tokenService: TokenService;
   authService: AuthenticationClient;
   jobManager: JobManager;
@@ -22,6 +24,7 @@ export interface ServiceDependencies {
 
 export * from './user.service';
 export * from './profile.service';
+export * from './post.service';
 export * from './activation-token.service';
 export * from './security.service';
 export * from './token.service';
