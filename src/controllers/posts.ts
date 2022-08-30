@@ -8,12 +8,11 @@ export type PostHandlers = keyof ReturnType<typeof createPostsController>;
 
 export const createPostsController = ({ postService }: ServiceDependencies) => {
   const addPost = async (req: Request, res: Response, next: NextFunction) => {
-    const posts = await postService.addPost((res.locals.user as TokenPayload).userId, req.body);
+    await postService.addPost((res.locals.user as TokenPayload).userId, req.body);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
-      message: 'Post has been successfully added.',
-      data: posts,
+      message: 'Post has been successfully added.'
     });
   };
 

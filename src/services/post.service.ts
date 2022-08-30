@@ -11,8 +11,8 @@ import { handleAsync } from '../utils/handle-async';
 export class PostService {
   constructor(private dependencies: ContainerDependencies) {}
 
-  async addPost(userId: number, post: Post): Promise<Post[]> | never {
-    const [, errOnCreate] = await handleAsync(
+  async addPost(userId: number, post: Post): Promise<Post> | never {
+    const [postResponse, errOnCreate] = await handleAsync(
       this.dependencies.postsRepository.addPost(userId, post),
     );
 
@@ -20,19 +20,7 @@ export class PostService {
       throw new AppError(Messages.POST.CREATE.APP_ERROR, errOnCreate);
     }
 
-    const [postResponse, errOnPosts] = await handleAsync(
-      this.dependencies.postsRepository.getPosts(userId, {
-        order: { by: 'createdAt', type: Sorting.DESCENDING },
-      } as Pagination),
-    );
-
-    if (errOnPosts) {
-      throw new AppError(Messages.POST.FIND_ALL.APP_ERROR, errOnPosts);
-    }
-
-    const [posts] = postResponse!;
-
-    return posts!;
+    return postResponse!;
   }
 
   async getPost(id: number): Promise<Post> | never {

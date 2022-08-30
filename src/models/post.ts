@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { Model } from 'objection';
 import { Post as IPost } from '../interfaces/post';
-import * as path from 'path';
 
 export class Post extends Model implements IPost {
   id!: number;

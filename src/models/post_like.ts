@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { Model, RelationMappings } from 'objection';
 import { PostLike as IPostLike } from '../interfaces/post';
-import * as path from 'path';
 
 export class PostLike extends Model implements IPostLike {
   id!: number;

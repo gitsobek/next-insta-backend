@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
-import { Post } from '../../interfaces/post';
 import { faker } from '@faker-js/faker';
+import { Post } from '../../interfaces/post';
 
 type PostMigrate = Omit<Post, 'id'>;
 

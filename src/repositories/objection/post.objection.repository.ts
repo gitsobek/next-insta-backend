@@ -1,10 +1,10 @@
+import { raw } from 'objection';
 import type { PostRepository } from '../post.repository';
 import type { Post, PostLike } from '../../interfaces/post';
 import type { Pagination } from '../../interfaces/pagination';
 import type { User } from '../../interfaces/user';
 import { Post as PostTable } from '../../models/post';
 import { PostLike as PostLikeTable } from '../../models/post_like';
-import { raw } from 'objection';
 
 export class PostObjectionRepository implements PostRepository {
   public async addPost(id: number, post: Post): Promise<Post> {
