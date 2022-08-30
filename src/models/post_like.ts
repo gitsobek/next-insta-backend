@@ -1,25 +1,33 @@
-import { Model, RelationMappings } from 'objection';
-import { Follower as IFollower } from '../interfaces/profile';
 import * as path from 'path';
+import { Model, RelationMappings } from 'objection';
+import { PostLike as IPostLike } from '../interfaces/post';
 
-export class Follower extends Model implements IFollower {
+export class PostLike extends Model implements IPostLike {
   id!: number;
-  userId!: number;
-  followedUserId!: number;
+  postId: number;
+  userId: number;
   createdAt: string;
   updatedAt: string;
 
-  static override tableName: string = 'followers';
+  static override tableName: string = 'post_likes';
   static override idColumn: string | string[] = 'id';
 
   static override get relationMappings(): RelationMappings {
     return {
-      users: {
+      postLikeUsers: {
         relation: Model.BelongsToOneRelation,
         modelClass: path.join(__dirname, 'User'),
         join: {
-          from: 'followers.userId',
+          from: 'post_likes.userId',
           to: 'users.id',
+        },
+      },
+      likes: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, 'Post'),
+        join: {
+          from: 'post_likes.postId',
+          to: 'posts.id',
         },
       },
     };

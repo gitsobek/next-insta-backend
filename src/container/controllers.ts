@@ -1,6 +1,10 @@
 import { asFunction, type AwilixContainer } from 'awilix';
-import { type ControllerDependencies, createUsersController } from '../controllers';
-import { createProfilesController } from '../controllers/profiles';
+import {
+  type ControllerDependencies,
+  createUsersController,
+  createProfilesController,
+  createPostsController,
+} from '../controllers';
 
 export async function registerControllers(
   container: AwilixContainer,
@@ -8,6 +12,7 @@ export async function registerControllers(
   container.register({
     usersController: asFunction(createUsersController),
     profilesController: asFunction(createProfilesController),
+    postsController: asFunction(createPostsController),
   });
 
   return container;

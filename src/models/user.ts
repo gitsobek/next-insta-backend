@@ -42,6 +42,22 @@ export class User extends Model implements IUser {
           to: 'followers.userId',
         },
       },
+      posts: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, 'Post'),
+        join: {
+          from: 'users.id',
+          to: 'posts.userId',
+        },
+      },
+      userLikes: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, 'PostLike'),
+        join: {
+          from: 'users.id',
+          to: 'post_likes.userId',
+        },
+      },
     };
   }
 

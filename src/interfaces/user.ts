@@ -1,3 +1,5 @@
+import type { PaginationResponse } from "./pagination";
+
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
@@ -33,9 +35,6 @@ export interface UserResponse {
   user: UserPublic;
 }
 
-export interface UsersResponse {
+export interface UsersResponse extends PaginationResponse {
   users: UserPublic[];
-  total: number;
-  page: number;
-  limit: number;
 }

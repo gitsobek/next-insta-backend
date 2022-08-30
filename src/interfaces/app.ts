@@ -16,6 +16,8 @@ import type { AuthenticationStrategy, TokenConfig } from '../factories/authentic
 import type { UserHandlers } from '../controllers';
 import type { ProfileRepository } from '../repositories/profile.repository';
 import type { ProfileHandlers } from '../controllers/profiles';
+import type { PostRepository } from '../repositories/post.repository';
+import type { PostHandlers } from '../controllers/posts';
 import type { SchedulerEnvironmentConfig } from './scheduler';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
@@ -57,6 +59,7 @@ export interface DatabaseDependencies<T = Knex> {
   dbConfig: DatabaseConfig;
   usersRepository: UserRepository;
   profilesRepository: ProfileRepository;
+  postsRepository: PostRepository;
 }
 
 export interface ConfigDependencies {
@@ -79,6 +82,7 @@ export interface CommonDependencies {
 export interface ValidationSchemaDependencies {
   usersValidation: ValidationSchema<UserHandlers>;
   profilesValidation: ValidationSchema<ProfileHandlers>;
+  postsValidation: ValidationSchema<PostHandlers>;
 }
 
 export interface MiddlewareDependencies {

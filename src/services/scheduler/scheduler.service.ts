@@ -102,27 +102,35 @@ export class SchedulerService {
     });
   }
 
-  private async processInitialJob(job: SchedulerJobSetup): Promise<any> {
+  private async processInitialJob(initialJob: SchedulerJobSetup): Promise<Job<SchedulerJob> | void> {
     const { logger } = this.dependencies;
 
-    if (job.rule === SchedulerRule.OVERWRITE) {
-      return this.cancelJob(job.name)
-        .then(() => this.createScheduledJob(job))
-        .then(() => logger.info(`[Scheduler] Initial job: "${job.name}" has overwritten existing job`))
+    if (initialJob.rule === SchedulerRule.OVERWRITE) {
+      return this.cancelJob(initialJob.name)
+        .then(() => this.createScheduledJob(initialJob))
+        .then(
+          (job) => (
+            logger.info(`[Scheduler] Initial job: "${initialJob.name}" has overwritten existing job`), Promise.resolve(job)
+          ),
+        )
         .catch((error) =>
-          logger.info(`[Scheduler] Error: "${error.message}" while overwriting initial job: ${job.name}`),
-        );
+          logger.info(`[Scheduler] Error: "${error.message}" while overwriting initial job: ${initialJob.name}`),
+        ) as Promise<Job<SchedulerJob>>;
     }
 
-    if (job.rule === SchedulerRule.DELETE) {
-      return this.cancelJob(job.name)
-        .then(() => logger.info(`[Scheduler] Job: "${job.name}" has been deleted`))
-        .catch((error) => logger.info(`[Scheduler] Error: "${error.message}" while deleting job: ${job.name}`));
+    if (initialJob.rule === SchedulerRule.DELETE) {
+      return this.cancelJob(initialJob.name)
+        .then(() => (logger.info(`[Scheduler] Job: "${initialJob.name}" has been deleted`), Promise.resolve()))
+        .catch((error) =>
+          logger.info(`[Scheduler] Error: "${error.message}" while deleting job: ${initialJob.name}`),
+        ) as Promise<void>;
     }
 
-    return this.createScheduledJob(job)
-      .then(() => logger.info(`[Scheduler] Initial job: "${job.name}" has been added`))
-      .catch((error) => logger.info(`[Scheduler] Error: "${error.message}" while adding initial job: ${job.name}`));
+    return this.createScheduledJob(initialJob)
+      .then((job) => (logger.info(`[Scheduler] Initial job: "${initialJob.name}" has been added`), Promise.resolve(job)))
+      .catch((error) =>
+        logger.info(`[Scheduler] Error: "${error.message}" while adding initial job: ${initialJob.name}`),
+      ) as Promise<Job<SchedulerJob>>;
   }
 
   private createRepeatOptions(config: SchedulerJobConfiguration): CronRepeatOptions {
