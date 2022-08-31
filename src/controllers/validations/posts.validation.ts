@@ -14,6 +14,17 @@ export function createValidationSchemasForPosts({
     }).required(),
   });
 
+  const updatePost = validator({
+    params: Joi.object({
+      id: Joi.number().integer().min(0).required(),
+    }).required(),
+    body: Joi.object({
+      photoUrl: Joi.string(),
+      description: Joi.string().max(1024),
+      location: Joi.string().max(256),
+    }).required()
+  });
+
   const getPost = validator({
     params: Joi.object({
       id: Joi.number().required(),
@@ -76,6 +87,7 @@ export function createValidationSchemasForPosts({
 
   return {
     addPost,
+    updatePost,
     getPost,
     getPosts,
     deletePost,

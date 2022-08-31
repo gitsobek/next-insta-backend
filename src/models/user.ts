@@ -1,5 +1,5 @@
-import { Model, RelationMappings } from 'objection';
 import * as path from 'path';
+import { Model, RelationMappings } from 'objection';
 import type { Gender, User as IUser, UserPublic } from '../interfaces/user';
 
 export class User extends Model implements IUser {
@@ -28,7 +28,7 @@ export class User extends Model implements IUser {
     return {
       stories: {
         relation: Model.HasManyRelation,
-        modelClass: path.join(__dirname, 'Story'),
+        modelClass: path.join(__dirname, 'story'),
         join: {
           from: 'users.id',
           to: 'stories.userId',
@@ -36,7 +36,7 @@ export class User extends Model implements IUser {
       },
       followers: {
         relation: Model.HasManyRelation,
-        modelClass: path.join(__dirname, 'Follower'),
+        modelClass: path.join(__dirname, 'follower'),
         join: {
           from: 'users.id',
           to: 'followers.userId',
@@ -44,7 +44,7 @@ export class User extends Model implements IUser {
       },
       posts: {
         relation: Model.HasManyRelation,
-        modelClass: path.join(__dirname, 'Post'),
+        modelClass: path.join(__dirname, 'post'),
         join: {
           from: 'users.id',
           to: 'posts.userId',
@@ -52,7 +52,7 @@ export class User extends Model implements IUser {
       },
       userLikes: {
         relation: Model.HasManyRelation,
-        modelClass: path.join(__dirname, 'PostLike'),
+        modelClass: path.join(__dirname, 'post_like'),
         join: {
           from: 'users.id',
           to: 'post_likes.userId',

@@ -14,6 +14,11 @@ export class PostObjectionRepository implements PostRepository {
     });
   }
 
+  public async updatePost(id: number, userId: number, post: Post): Promise<number> {
+    const { id: idOfPost, ...payload } = post;
+    return PostTable.query().patch(payload).where({ id, userId });
+  }
+
   public async findPostById(id: number): Promise<Post | undefined> {
     return PostTable.query()
       .select([
@@ -59,14 +64,20 @@ export class PostObjectionRepository implements PostRepository {
     return Promise.all([query, initialQuery.resultSize()] as unknown as [Post[], number]);
   }
 
-  public async deletePost(id: number): Promise<Post> {
-    return PostTable.query().deleteById(id).returning('*') as unknown as Post;
+  public async deletePost(id: number, userId: number): Promise<number> {
+    return PostTable.query().delete().where({ id, userId });
   }
 
   public async getLikes(id: number, queryObject?: Pagination): Promise<[User[], number]> {
     const initialQuery = PostLikeTable.query()
+      .select([
+        'users.id',
+        'users.username',
+        'users.firstName',
+        'users.lastName',
+        'users.avatar as avatarUrl',
+      ])
       .innerJoin('users', 'users.id', 'post_likes.userId')
-      .columns('users.*')
       .where('postId', '=', id);
 
     const query = initialQuery.clone();

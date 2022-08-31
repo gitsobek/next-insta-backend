@@ -15,6 +15,12 @@ export const postsRouting = ({
     postsController.addPost,
   );
 
+  router.patch(
+    '/:id',
+    [apiKeyHandler, requireAccessHandler, postsValidation.updatePost],
+    postsController.updatePost,
+  );
+
   router.get(
     '/getById/:id',
     [apiKeyHandler, requireAccessHandler, postsValidation.getPost],

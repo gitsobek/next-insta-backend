@@ -99,9 +99,6 @@ export function createValidationSchemasForUsers({
   });
 
   const updateUser = validator({
-    params: Joi.object({
-      userId: Joi.number().integer().min(0).required(),
-    }),
     body: Joi.object<User>({
       email: Joi.string().email().min(4).max(128),
       avatar: Joi.string().max(1024),
@@ -110,12 +107,6 @@ export function createValidationSchemasForUsers({
       lastName: Joi.string().min(1).max(50),
       bio: Joi.string().min(1).max(1024),
       phoneNumber: Joi.string().min(1).max(26),
-    }).required(),
-  });
-
-  const deleteUser = validator({
-    params: Joi.object({
-      userId: Joi.number().integer().min(0).required(),
     }).required(),
   });
 
@@ -129,7 +120,6 @@ export function createValidationSchemasForUsers({
     getUserByUsername,
     getUsers,
     createUser,
-    updateUser,
-    deleteUser,
+    updateUser
   };
 }

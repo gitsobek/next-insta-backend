@@ -8,7 +8,10 @@ export type ProfileHandlers = keyof ReturnType<typeof createProfilesController>;
 
 export const createProfilesController = ({ profileService }: ServiceDependencies) => {
   const addStory = async (req: Request, res: Response, next: NextFunction) => {
-    const stories = await profileService.addStory((res.locals.user as TokenPayload).userId, req.body);
+    const stories = await profileService.addStory(
+      (res.locals.user as TokenPayload).userId,
+      req.body,
+    );
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -28,7 +31,10 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
   };
 
   const deleteStory = async (req: Request, res: Response, next: NextFunction) => {
-    const stories = await profileService.deleteStory(+req.params.id);
+    const stories = await profileService.deleteStory(
+      +req.params.id,
+      (res.locals.user as TokenPayload).userId,
+    );
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -108,7 +114,10 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
   };
 
   const unfollowUser = async (req: Request, res: Response, next: NextFunction) => {
-    await profileService.unfollowUser(req.params.username, (res.locals.user as TokenPayload).userId);
+    await profileService.unfollowUser(
+      req.params.username,
+      (res.locals.user as TokenPayload).userId,
+    );
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,

@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Pagination, Sorting } from '../interfaces/pagination';
-import type { ServiceDependencies } from '../services';
 import { BearerToken } from '../utils/bearer-token';
+import type { ServiceDependencies } from '../services';
+import type { TokenPayload } from '../factories/authentication/authentication-client.types';
 
 export type UserHandlers = keyof ReturnType<typeof createUsersController>;
 
@@ -147,7 +148,10 @@ export const createUsersController = ({ userService, authService }: ServiceDepen
   };
 
   const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    const { user } = await userService.updateUser(+req.params.userId, req.body);
+    const { user } = await userService.updateUser(
+      (res.locals.user as TokenPayload).userId,
+      req.body,
+    );
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -157,7 +161,7 @@ export const createUsersController = ({ userService, authService }: ServiceDepen
   };
 
   const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    await userService.deleteUser(+req.params.userId);
+    await userService.deleteUser((res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
