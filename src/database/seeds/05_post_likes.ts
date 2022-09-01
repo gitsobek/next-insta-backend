@@ -9,10 +9,12 @@ function createFakePostLike(id: number, userId: number): PostLike {
   };
 }
 
-function createFakeFollowers(id: number): PostLike[] {
+function createFakePostLikes(id: number): PostLike[] {
   const size = Math.floor(Math.random() * 24);
   const uniqueIds = generateUniqueRandomNumbers(1, 24, size);
-  return Array.from({ length: size }, (_, i) => i).map((idx) => createFakePostLike(id, uniqueIds[idx]));
+  return Array.from({ length: size }, (_, i) => i).map((idx) =>
+    createFakePostLike(id, uniqueIds[idx]),
+  );
 }
 
 export async function seed(knex: Knex): Promise<void> {
@@ -20,7 +22,7 @@ export async function seed(knex: Knex): Promise<void> {
   await knex('post_likes').del();
 
   const postLikes = Array.from({ length: 24 }, (_, i) => i + 1)
-    .map(createFakeFollowers)
+    .map(createFakePostLikes)
     .flat();
 
   // Inserts seed entries

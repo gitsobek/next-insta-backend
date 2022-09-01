@@ -30,7 +30,7 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
   };
 
   const getPost = async (req: Request, res: Response, next: NextFunction) => {
-    const post = await postService.getPost(+req.params.id);
+    const post = await postService.getPost(+req.params.id, (res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -54,7 +54,7 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
       filter,
     };
 
-    const posts = await postService.getPosts(req.params.username, queryObject);
+    const posts = await postService.getPosts(req.params.username, queryObject, (res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
