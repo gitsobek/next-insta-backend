@@ -61,6 +61,9 @@
     "CREATE": {
       "APP_ERROR": "An error has occurred while creating a post"
     },
+    "UPDATE": {
+      "APP_ERROR": "An error has occurred while updating a post"
+    },
     "DELETE": {
       "APP_ERROR": "An error has occurred while deleting a post"
     },

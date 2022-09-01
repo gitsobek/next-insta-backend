@@ -5,7 +5,6 @@ import type { ContainerDependencies } from '../interfaces/container';
 import { Pagination, Sorting } from '../interfaces/pagination';
 import type { Post, PostsResponse } from '../interfaces/post';
 import { UsersResponse } from '../interfaces/user';
-import { createUserForPublic } from '../models/user';
 import { handleAsync } from '../utils/handle-async';
 
 export class PostService {
@@ -18,6 +17,22 @@ export class PostService {
 
     if (errOnCreate) {
       throw new AppError(Messages.POST.CREATE.APP_ERROR, errOnCreate);
+    }
+
+    return postResponse!;
+  }
+
+  async updatePost(id: number, userId: number, postPayload: Post): Promise<number> | never {
+    const [postResponse, errOnUpdate] = await handleAsync(
+      this.dependencies.postsRepository.updatePost(id, userId, postPayload),
+    );
+
+    if (errOnUpdate) {
+      throw new AppError(Messages.POST.UPDATE.APP_ERROR, errOnUpdate);
+    }
+
+    if (!postResponse) {
+      throw new NotFoundError(Messages.POST.FIND_ONE.NOT_FOUND);
     }
 
     return postResponse!;
@@ -66,9 +81,9 @@ export class PostService {
     };
   }
 
-  async deletePost(id: number): Promise<Post[]> | never {
+  async deletePost(id: number, authenticatedUserId: number): Promise<Post[]> | never {
     const [deletedPost, errOnDelete] = await handleAsync(
-      this.dependencies.postsRepository.deletePost(id),
+      this.dependencies.postsRepository.deletePost(id, authenticatedUserId),
     );
 
     if (errOnDelete) {
@@ -80,7 +95,7 @@ export class PostService {
     }
 
     const [postResponse, errOnPosts] = await handleAsync(
-      this.dependencies.postsRepository.getPosts(deletedPost!.userId, {
+      this.dependencies.postsRepository.getPosts(authenticatedUserId, {
         order: { by: 'createdAt', type: Sorting.DESCENDING },
       } as Pagination),
     );
@@ -106,7 +121,7 @@ export class PostService {
     const [users = [], total = 0] = likeResponse!;
 
     return {
-      users: users.map(createUserForPublic),
+      users,
       total,
       page: query?.page,
       limit: query?.limit,

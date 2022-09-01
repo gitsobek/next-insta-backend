@@ -10,9 +10,22 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
   const addPost = async (req: Request, res: Response, next: NextFunction) => {
     await postService.addPost((res.locals.user as TokenPayload).userId, req.body);
 
+    return res.status(StatusCodes.CREATED).send({
+      code: StatusCodes.CREATED,
+      message: 'Post has been successfully added.',
+    });
+  };
+
+  const updatePost = async (req: Request, res: Response, next: NextFunction) => {
+    await postService.updatePost(
+      +req.params.id,
+      (res.locals.user as TokenPayload).userId,
+      req.body,
+    );
+
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
-      message: 'Post has been successfully added.'
+      message: 'Post has been successfully updated.',
     });
   };
 
@@ -51,7 +64,10 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
   };
 
   const deletePost = async (req: Request, res: Response, next: NextFunction) => {
-    const posts = await postService.deletePost(+req.params.id);
+    const posts = await postService.deletePost(
+      +req.params.id,
+      (res.locals.user as TokenPayload).userId,
+    );
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -85,10 +101,7 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
   };
 
   const likePost = async (req: Request, res: Response, next: NextFunction) => {
-    await postService.likePost(
-      +req.params.id,
-      (res.locals.user as TokenPayload).userId,
-    );
+    await postService.likePost(+req.params.id, (res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -97,10 +110,7 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
   };
 
   const unlikePost = async (req: Request, res: Response, next: NextFunction) => {
-    await postService.unlikePost(
-      +req.params.id,
-      (res.locals.user as TokenPayload).userId,
-    );
+    await postService.unlikePost(+req.params.id, (res.locals.user as TokenPayload).userId);
 
     return res.status(StatusCodes.OK).send({
       code: StatusCodes.OK,
@@ -110,6 +120,7 @@ export const createPostsController = ({ postService }: ServiceDependencies) => {
 
   return {
     addPost,
+    updatePost,
     getPost,
     getPosts,
     deletePost,

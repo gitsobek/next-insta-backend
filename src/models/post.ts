@@ -17,7 +17,7 @@ export class Post extends Model implements IPost {
   static override relationMappings = {
     postAuthor: {
       relation: Model.BelongsToOneRelation,
-      modelClass: path.join(__dirname, 'User'),
+      modelClass: path.join(__dirname, 'user'),
       join: {
         from: 'posts.userId',
         to: 'users.id',

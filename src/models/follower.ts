@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { Model, RelationMappings } from 'objection';
 import { Follower as IFollower } from '../interfaces/profile';
-import * as path from 'path';
 
 export class Follower extends Model implements IFollower {
   id!: number;
@@ -16,7 +16,7 @@ export class Follower extends Model implements IFollower {
     return {
       users: {
         relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User'),
+        modelClass: path.join(__dirname, 'user'),
         join: {
           from: 'followers.userId',
           to: 'users.id',

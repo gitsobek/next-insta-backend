@@ -5,7 +5,6 @@ import type { ContainerDependencies } from '../interfaces/container';
 import type { Pagination } from '../interfaces/pagination';
 import type { Profile, Story } from '../interfaces/profile';
 import type { UsersResponse } from '../interfaces/user';
-import { createUserForPublic } from '../models/user';
 import { handleAsync } from '../utils/handle-async';
 
 export class ProfileService {
@@ -18,7 +17,9 @@ export class ProfileService {
       throw new AppError(Messages.STORY.CREATE.APP_ERROR, err);
     }
 
-    const [stories, errOnStories] = await handleAsync(this.dependencies.profilesRepository.getStories(userId));
+    const [stories, errOnStories] = await handleAsync(
+      this.dependencies.profilesRepository.getStories(userId),
+    );
 
     if (errOnStories) {
       throw new AppError(Messages.STORY.FIND_ALL.APP_ERROR, errOnStories);
@@ -49,8 +50,10 @@ export class ProfileService {
     return stories!;
   }
 
-  async deleteStory(id: number): Promise<Story[]> {
-    const [deletedStory, err] = await handleAsync(this.dependencies.profilesRepository.deleteStory(id));
+  async deleteStory(id: number, authenticatedUserId: number): Promise<Story[]> {
+    const [deletedStory, err] = await handleAsync(
+      this.dependencies.profilesRepository.deleteStory(id, authenticatedUserId),
+    );
 
     if (err) {
       throw new AppError(Messages.STORY.DELETE.APP_ERROR, err);
@@ -61,7 +64,7 @@ export class ProfileService {
     }
 
     const [stories, errOnStories] = await handleAsync(
-      this.dependencies.profilesRepository.getStories(deletedStory!.userId),
+      this.dependencies.profilesRepository.getStories(authenticatedUserId),
     );
 
     if (errOnStories) {
@@ -71,47 +74,23 @@ export class ProfileService {
     return stories!;
   }
 
-  async getProfileByUsername(username: string, authenticatedUserId: number): Promise<Profile> | never {
-    const { usersRepository, profilesRepository } = this.dependencies;
-
-    const [user, errOnUser] = await handleAsync(usersRepository.findByUsername(username));
-
-    if (errOnUser) {
-      throw new AppError(Messages.USERS.FIND_ONE.APP_ERROR, errOnUser);
-    }
-
-    if (!user) {
-      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
-    }
-
+  async getProfileByUsername(
+    username: string,
+    authenticatedUserId: number,
+  ): Promise<Profile> | never {
     const [profile, errOnProfile] = await handleAsync(
-      Promise.all([
-        profilesRepository.getStories(user.id),
-        profilesRepository.getFollowers(user.id),
-        profilesRepository.getFollowingUsers(user.id),
-        profilesRepository.follows(authenticatedUserId, user.id),
-      ]),
+      this.dependencies.profilesRepository.getProfile(username, authenticatedUserId),
     );
 
     if (errOnProfile) {
       throw new AppError(Messages.PROFILE.FIND_ONE.APP_ERROR, errOnProfile);
     }
 
-    const publicUser = createUserForPublic(user);
-    const [stories, [, totalFollowers], [, totalFollowingUsers], isFollowing] = profile!;
+    if (!profile) {
+      throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
+    }
 
-    return {
-      firstName: publicUser.firstName,
-      lastName: publicUser.lastName,
-      username: publicUser.username,
-      avatarUrl: publicUser.avatar,
-      bio: publicUser.bio,
-      stories: stories ?? [],
-      posts: 0,
-      followers: totalFollowers,
-      following: totalFollowingUsers,
-      isFollowing,
-    };
+    return profile!;
   }
 
   async getFollowers(username: string, query: Pagination): Promise<UsersResponse> | never {
@@ -127,16 +106,18 @@ export class ProfileService {
       throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
-    const [profile, errOnProfile] = await handleAsync(profilesRepository.getFollowers(user.id, query));
+    const [profile, errOnProfile] = await handleAsync(
+      profilesRepository.getFollowers(user.id, query),
+    );
 
     if (errOnProfile) {
       throw new AppError(Messages.FOLLOWER.FOLLOWERS.APP_ERROR, errOnProfile);
     }
 
-    const [followers = [], total = 0] = profile!;
+    const [users = [], total = 0] = profile!;
 
     return {
-      users: followers.map(createUserForPublic),
+      users,
       total,
       page: query.page,
       limit: query.limit,
@@ -156,16 +137,18 @@ export class ProfileService {
       throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
-    const [profile, errOnProfile] = await handleAsync(profilesRepository.getFollowingUsers(user.id, query));
+    const [profile, errOnProfile] = await handleAsync(
+      profilesRepository.getFollowingUsers(user.id, query),
+    );
 
     if (errOnProfile) {
       throw new AppError(Messages.FOLLOWER.FOLLOWING_USERS.APP_ERROR, errOnProfile);
     }
 
-    const [followingUsers = [], total = 0] = profile!;
+    const [users = [], total = 0] = profile!;
 
     return {
-      users: followingUsers.map(createUserForPublic),
+      users,
       total,
       page: query.page,
       limit: query.limit,
@@ -185,7 +168,9 @@ export class ProfileService {
       throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
-    const [result, errOnProfile] = await handleAsync(profilesRepository.follow(authenticatedUserId, user.id));
+    const [result, errOnProfile] = await handleAsync(
+      profilesRepository.follow(authenticatedUserId, user.id),
+    );
 
     if (errOnProfile) {
       throw new AppError(Messages.FOLLOWER.FOLLOW.APP_ERROR, errOnProfile);
@@ -207,7 +192,9 @@ export class ProfileService {
       throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
-    const [result, errOnProfile] = await handleAsync(profilesRepository.unfollow(authenticatedUserId, user.id));
+    const [result, errOnProfile] = await handleAsync(
+      profilesRepository.unfollow(authenticatedUserId, user.id),
+    );
 
     if (errOnProfile) {
       throw new AppError(Messages.FOLLOWER.UNFOLLOW.APP_ERROR, errOnProfile);
