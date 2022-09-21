@@ -9,6 +9,7 @@ import {
   ActivationTokenService,
   TokenService,
   PostService,
+  CommentService,
 } from '../services';
 import { InternalJobManager } from '../services/scheduler/internal-job-manager.service';
 import { JobManager } from '../services/scheduler/job-manager.service';
@@ -18,8 +19,11 @@ export async function registerServices(
   container: AwilixContainer,
   appConfig: AppConfig,
 ): Promise<AwilixContainer<ServiceDependencies>> {
-  const authenticationFactory: AuthenticationClientFactory = container.resolve('authenticationFactory');
-  const AuthenticationClient = authenticationFactory.getAuthenticationClient(appConfig.authenticationStrategy);
+  const authenticationFactory: AuthenticationClientFactory =
+    container.resolve('authenticationFactory');
+  const AuthenticationClient = authenticationFactory.getAuthenticationClient(
+    appConfig.authenticationStrategy,
+  );
 
   container.register({
     securityService: asClass(SecurityService).singleton(),
@@ -28,10 +32,11 @@ export async function registerServices(
     userService: asClass(UserService).singleton(),
     profileService: asClass(ProfileService).singleton(),
     postService: asClass(PostService).singleton(),
+    commentService: asClass(CommentService).singleton(),
     authService: asClass(AuthenticationClient).singleton(),
     internalJobManager: asClass(InternalJobManager).singleton(),
     jobManager: asClass(JobManager).singleton(),
-    schedulerService: asClass(SchedulerService).singleton()
+    schedulerService: asClass(SchedulerService).singleton(),
   });
 
   return container;

@@ -13,8 +13,8 @@ export const createProfilesController = ({ profileService }: ServiceDependencies
       req.body,
     );
 
-    return res.status(StatusCodes.OK).send({
-      code: StatusCodes.OK,
+    return res.status(StatusCodes.CREATED).send({
+      code: StatusCodes.CREATED,
       message: 'Story has been successfully added.',
       data: stories,
     });

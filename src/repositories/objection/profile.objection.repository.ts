@@ -46,12 +46,12 @@ export class ProfileObjectionRepository implements ProfileRepository {
                 .where('userId', '=', user.id),
             ),
             raw(
-              '(select exists ?) as isFollowing',
-              FollowerTable.query().count().where({
+              '(select exists ?)',
+              FollowerTable.query().where({
                 userId: authenticatedUserId,
                 followedUserId: user.id,
               }),
-            ),
+            ).as('isFollowing'),
             raw(
               "(select coalesce(json_agg(row_to_json(storiesRow)), '[]'::json) as stories FROM (?) storiesRow)",
               StoryTable.query()

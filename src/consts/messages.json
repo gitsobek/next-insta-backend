@@ -74,6 +74,27 @@
       "APP_ERROR": "An error has occurred on unlike post action"
     }
   },
+  "COMMENT": {
+    "FIND_ONE": {
+      "NOT_FOUND": "Comment has not been found",
+      "APP_ERROR": "An error has occurred while searching for comment"
+    },
+    "FIND_ALL": {
+      "APP_ERROR": "An error has occurred while searching for comments"
+    },
+    "CREATE": {
+      "APP_ERROR": "An error has occurred while creating a comment"
+    },
+    "DELETE": {
+      "APP_ERROR": "An error has occurred while deleting a comment"
+    },
+    "LIKE": {
+      "APP_ERROR": "An error has occurred on like comment action"
+    },
+    "UNLIKE": {
+      "APP_ERROR": "An error has occurred on unlike comment action"
+    }
+  },
   "AUTH": {
     "INVALID_PAYLOAD": "Invalid username or password",
     "INVALID_PASSWORD": "Invalid password",

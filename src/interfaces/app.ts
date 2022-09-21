@@ -4,7 +4,10 @@ import type { Knex } from 'knex';
 import type { RoutingDependencies } from '../routes';
 import type { Celebrator2 } from 'celebrate';
 import type { AppendArgument } from '../utils/types';
-import type { Application as ServerApplication, ApplicationType } from '../factories/application/application.types';
+import type {
+  Application as ServerApplication,
+  ApplicationType,
+} from '../factories/application/application.types';
 import type { Database, DatabaseMapperType } from '../factories/database/database.types';
 import type { DatabaseConfig } from './database';
 import type { UserRepository } from '../repositories/user.repository';
@@ -12,12 +15,16 @@ import type { UserActivationConfig } from '../config/app';
 import type { ApplicationFactory } from '../factories/application/application.factory';
 import type { DatabaseFactory } from '../factories/database/database.factory';
 import type { AuthenticationClientFactory } from '../factories/authentication/authentication-client.factory';
-import type { AuthenticationStrategy, TokenConfig } from '../factories/authentication/authentication-client.types';
-import type { UserHandlers } from '../controllers';
+import type {
+  AuthenticationStrategy,
+  TokenConfig,
+} from '../factories/authentication/authentication-client.types';
+import type { CommentHandlers, UserHandlers } from '../controllers';
 import type { ProfileRepository } from '../repositories/profile.repository';
 import type { ProfileHandlers } from '../controllers/profiles';
 import type { PostRepository } from '../repositories/post.repository';
 import type { PostHandlers } from '../controllers/posts';
+import type { CommentRepository } from '../repositories/comment.repository';
 import type { SchedulerEnvironmentConfig } from './scheduler';
 
 export type MiddlewareType<T> = (req: Request, res: Response, next: NextFunction) => T;
@@ -60,6 +67,7 @@ export interface DatabaseDependencies<T = Knex> {
   usersRepository: UserRepository;
   profilesRepository: ProfileRepository;
   postsRepository: PostRepository;
+  commentsRepository: CommentRepository;
 }
 
 export interface ConfigDependencies {
@@ -83,6 +91,7 @@ export interface ValidationSchemaDependencies {
   usersValidation: ValidationSchema<UserHandlers>;
   profilesValidation: ValidationSchema<ProfileHandlers>;
   postsValidation: ValidationSchema<PostHandlers>;
+  commentsValidation: ValidationSchema<CommentHandlers>;
 }
 
 export interface MiddlewareDependencies {

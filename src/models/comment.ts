@@ -1,42 +1,41 @@
 import * as path from 'path';
 import { Model } from 'objection';
-import { Post as IPost } from '../interfaces/post';
+import type { Comment as IComment } from '../interfaces/comment';
 
-export class Post extends Model implements IPost {
+export class Comment extends Model implements IComment {
   id!: number;
-  photoUrl: string;
-  description: string;
-  location: string;
+  text: string;
+  postId: number;
   userId: number;
   createdAt: string;
   updatedAt: string;
 
-  static override tableName: string = 'posts';
+  static override tableName: string = 'comments';
   static override idColumn: string | string[] = 'id';
 
   static override relationMappings = {
-    postAuthor: {
+    commentAuthor: {
       relation: Model.BelongsToOneRelation,
       modelClass: path.join(__dirname, 'user'),
       join: {
-        from: 'posts.userId',
+        from: 'comments.userId',
         to: 'users.id',
       },
     },
-    postLikes: {
-      relation: Model.HasManyRelation,
-      modelClass: path.join(__dirname, 'post_like'),
+    commentPost: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: path.join(__dirname, 'post'),
       join: {
-        from: 'posts.id',
-        to: 'post_likes.postId',
+        from: 'comments.postId',
+        to: 'posts.id',
       },
     },
-    postComments: {
+    commentLikes: {
       relation: Model.HasManyRelation,
-      modelClass: path.join(__dirname, 'comment'),
+      modelClass: path.join(__dirname, 'comment_like'),
       join: {
-        from: 'posts.id',
-        to: 'comments.postId',
+        from: 'comments.id',
+        to: 'comment_likes.commentId',
       },
     },
   };

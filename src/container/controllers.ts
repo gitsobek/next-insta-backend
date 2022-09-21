@@ -4,6 +4,7 @@ import {
   createUsersController,
   createProfilesController,
   createPostsController,
+  createCommentsController,
 } from '../controllers';
 
 export async function registerControllers(
@@ -13,6 +14,7 @@ export async function registerControllers(
     usersController: asFunction(createUsersController),
     profilesController: asFunction(createProfilesController),
     postsController: asFunction(createPostsController),
+    commentsController: asFunction(createCommentsController),
   });
 
   return container;

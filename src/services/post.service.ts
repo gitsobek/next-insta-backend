@@ -38,8 +38,10 @@ export class PostService {
     return postResponse!;
   }
 
-  async getPost(id: number): Promise<Post> | never {
-    const [post, errOnPost] = await handleAsync(this.dependencies.postsRepository.findPostById(id));
+  async getPost(id: number, userId: number): Promise<Post> | never {
+    const [post, errOnPost] = await handleAsync(
+      this.dependencies.postsRepository.findPostById(id, userId),
+    );
 
     if (errOnPost) {
       throw new AppError(Messages.POST.FIND_ONE.APP_ERROR, errOnPost);
@@ -52,7 +54,11 @@ export class PostService {
     return post!;
   }
 
-  async getPosts(username: string, query: Pagination): Promise<PostsResponse> | never {
+  async getPosts(
+    username: string,
+    query: Pagination,
+    userId: number,
+  ): Promise<PostsResponse> | never {
     const { usersRepository, postsRepository } = this.dependencies;
 
     const [user, errOnUser] = await handleAsync(usersRepository.findByUsername(username));
@@ -65,7 +71,9 @@ export class PostService {
       throw new NotFoundError(Messages.USERS.FIND_ONE.NOT_FOUND);
     }
 
-    const [postResponse, errOnPosts] = await handleAsync(postsRepository.getPosts(user.id, query));
+    const [postResponse, errOnPosts] = await handleAsync(
+      postsRepository.getPosts(user.id, query, userId),
+    );
 
     if (errOnPosts) {
       throw new AppError(Messages.POST.FIND_ALL.APP_ERROR, errOnPosts);
@@ -95,9 +103,13 @@ export class PostService {
     }
 
     const [postResponse, errOnPosts] = await handleAsync(
-      this.dependencies.postsRepository.getPosts(authenticatedUserId, {
-        order: { by: 'createdAt', type: Sorting.DESCENDING },
-      } as Pagination),
+      this.dependencies.postsRepository.getPosts(
+        authenticatedUserId,
+        {
+          order: { by: 'createdAt', type: Sorting.DESCENDING },
+        } as Pagination,
+        authenticatedUserId,
+      ),
     );
 
     if (errOnPosts) {

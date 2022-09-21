@@ -19,23 +19,47 @@ export class PostObjectionRepository implements PostRepository {
     return PostTable.query().patch(payload).where({ id, userId });
   }
 
-  public async findPostById(id: number): Promise<Post | undefined> {
+  public async findPostById(id: number, userId?: number): Promise<Post | undefined> {
     return PostTable.query()
       .select([
         'posts.*',
-        PostTable.relatedQuery('postLikes')
-          .count()
-          .as('likes')
-          .where('postLikes.postId', '=', id)
-          .groupBy('postLikes.postId'),
+        raw(
+          'cast(coalesce(?, 0) as INTEGER) as likes',
+          PostTable.relatedQuery('postLikes')
+            .count()
+            .where('postLikes.postId', '=', id)
+            .groupBy('postLikes.postId'),
+        ),
+        raw(
+          '(select exists ?)',
+          PostLikeTable.query().where({
+            postId: id,
+            userId,
+          }),
+        ).as('isLiking'),
       ])
       .where('posts.id', '=', id)
       .first();
   }
 
-  public async getPosts(id: number, queryObject?: Pagination): Promise<[Post[], number]> {
+  public async getPosts(
+    id: number,
+    queryObject?: Pagination,
+    userId?: number,
+  ): Promise<[Post[], number]> {
     const initialQuery = PostTable.query()
-      .select('posts.*', raw('cast(coalesce(grouped_likes.count, 0) as INTEGER) as likes'))
+      .select(
+        'posts.*',
+        raw('cast(coalesce(grouped_likes.count, 0) as INTEGER) as likes'),
+        raw('cast(coalesce(liked_by_sender.id, 0) as BOOLEAN)').as('isLiking'),
+      )
+      .leftJoin(
+        PostLikeTable.query()
+          .as('liked_by_sender')
+          .where('userId', '=', userId || null),
+        'posts.id',
+        'liked_by_sender.postId',
+      )
       .leftJoin(
         PostLikeTable.query().select('postId').count().groupBy('postId').as('grouped_likes'),
         'posts.id',
@@ -98,11 +122,11 @@ export class PostObjectionRepository implements PostRepository {
     return Promise.all([query, initialQuery.resultSize()] as unknown as [User[], number]);
   }
 
-  public async likes(visitorId: number, checkedPostId: number): Promise<boolean> {
+  public async likes(postId: number, visitorId: number): Promise<boolean> {
     return PostLikeTable.query()
       .select()
       .where({
-        postId: checkedPostId,
+        postId,
         userId: visitorId,
       })
       .context({
@@ -112,14 +136,14 @@ export class PostObjectionRepository implements PostRepository {
       }) as unknown as Promise<boolean>;
   }
 
-  public async like(visitorId: number, postId: number): Promise<PostLike> {
+  public async like(postId: number, visitorId: number): Promise<PostLike> {
     return PostLikeTable.query().insertAndFetch({
       postId,
       userId: visitorId,
     });
   }
 
-  public async unlike(visitorId: number, postId: number): Promise<number> {
+  public async unlike(postId: number, visitorId: number): Promise<number> {
     return PostLikeTable.query().delete().where({
       postId,
       userId: visitorId,
